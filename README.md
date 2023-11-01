@@ -2,7 +2,7 @@
 Report for the Proseminar Geocomputation and Earth Observation
 
 ## Project Proposal
-### 1. Summary
+### 1. Abstract
 One of the most popular dishes in Europe and around the world is probably pizza. Pizza can be made in all possible ways. It can be cheap, expensive, vegetarian, vegan or so much more. But the most common ingredients haven't always been local in Europe. However, most people are not aware of that. So this project aims to track the historical journey of some selected ingredients over continents and time. And then present the result in an appealing animation.
 
 
