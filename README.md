@@ -14,7 +14,7 @@ Nowadays, with all kinds of food available year-round in supermarkets, we tend t
 ### 3. Objective
 The goal of this project is to track the journey over time and over continents of some selected ingredients of the dish pizza. An easy-to-prepare dough contains water, salt, flour (mostly wheat), yeast, and olive oil ([Recipe from Betty Bossy](https://www.bettybossi.ch/de/Rezept/ShowRezept/BB_ITKU120801_0243A-40-de)). Possible vegetarian topics include corn, tomatoes, onions, paprika, cheese, and basil. For this project, only species are considered, as there is no data available on GBIF for processed food. The ingredients considered are: wheat (Triticum), olive (Olea europaea), corn (Zea mays), tomatoes (Solanum lycopersicum), onions (Allium cepa), paprika (Capsicum), and basil (Ocimum basilicum). This can change if the dataset for a chosen food isn't usable, when more food is added or ingredients are changed.
 Further, this project tries to answer the question of when the selected ingredients were brought to a new continent by humans and where they came from. At the end, the journey of the ingredients around the world will be mapped and animated to have a more accessible and easier-to-understand result.
-To prove [feasibility, an example](ps_report/Feasibility_Example.Rmd) has been done using the dataset of the tomato (Solanum lycopersicum). The result of this example shows the project is doable and also helped to adjust the proposal.
+To prove [feasibility, an example](/Feasibility_Example.Rmd) has been done using the dataset of the tomato (Solanum lycopersicum). The result of this example shows the project is doable and also helped to adjust the proposal.
 
 
 ### 4. Implementation
