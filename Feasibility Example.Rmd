@@ -5,7 +5,6 @@ date: "2023-11-01"
 output: html_document
 ---
 
-
 # Example for showing feasibility
 
 ### Setting up
@@ -44,8 +43,7 @@ usethis::edit_r_environ()
 
 ### Data download
 
-Downloading the data of tomato with the taxonomy Solanum Lyopersicum L.
-through the package[@rgbif].
+Downloading the data of tomato with the taxonomy Solanum Lyopersicum L. through the package[@rgbif].
 
 ```{r}
 
@@ -167,6 +165,7 @@ ggsave("earliest_appearance_timeline.png", width = 8, height = 6)
 ```
 
 ### Plotting the Data on a Map
+
 Europe and Asia aren't seperated yet on the plot. For the project this will be altered.
 
 ```{r}
@@ -195,4 +194,3 @@ ggsave("earliest_appearance_tomato_plot.png", plot = last_plot(), width = 8, hei
 # Citation of the downloaded dataset
 gbif_citation(x= "0029248-231002084531237")
 ```
-
