@@ -1,5 +1,5 @@
 ---
-title: "Feasibility Example"
+title: "Feasibility_Example"
 author: "Chiara Huwiler"
 date: "2023-11-01"
 output: html_document
@@ -167,6 +167,7 @@ ggsave("earliest_appearance_timeline.png", width = 8, height = 6)
 ```
 
 ### Plotting the Data on a Map
+Europe and Asia aren't seperated yet on the plot. For the project this will be altered.
 
 ```{r}
 # Getting the continent boundaries
