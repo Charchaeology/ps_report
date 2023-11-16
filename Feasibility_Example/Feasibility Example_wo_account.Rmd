@@ -1,0 +1,215 @@
+---
+title: "Feasibilty_Example_wo_account"
+author: "Chiara Huwiler"
+date: "2023-11-07"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Example for showing feasibility
+
+### Setting up
+
+```{r, eval=FALSE}
+# Set up
+install.packages("rgbif")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("tidyr")
+install.packages("stringr")
+install.packages("lubridate")
+install.packages("countrycode")
+install.packages("rnaturalearth")
+install.packages("rnaturalearthdata")
+
+```
+
+```{r, eval=FALSE}
+# Load packages
+library(rgbif)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(stringr)
+library(lubridate)
+library(countrycode)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# Load Functions
+source("./feasibility_example_functions.R")
+
+```
+
+### Data download
+
+The data of tomato with the taxonomy Solanum Lyopersicum L has been
+downloaded through the package[@rgbif]. With the code visible in the
+following chunk. As the data is already downloaded this chunk doesn't
+need to be run and is only for showing how the data has been accessed.
+
+```{r, eval=FALSE}
+# Find taxon key
+name_backbone("Solanum lycopersicum")
+
+taxonKey <- name_backbone("Solanum lycopersicum")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+tomato_data <- occ_download(
+  pred("taxonKey", 2930137),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ tomato_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(tomato_d, "tomato_d1.csv")
+```
+
+### Preparation of the Data
+
+Reducing the dataset to the needed data
+
+```{r}
+tomato_d2 <- read.csv("tomato_d1.csv", sep = ",")
+
+# Removing not needed columns
+# tomato_d2 <- tomato_d2 %>%
+ # select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+tomato_d2 <- tomato_d2 %>%
+  filter(!is.na(scientificName))
+tomato_d2 <- tomato_d2 %>%
+  filter(!is.na(year))
+tomato_d2 <- tomato_d2 %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+### Finding earliest apperance
+
+```{r}
+# Finding earliest appearance on a continent for a specific species
+source("feasibility_example_functions.R")
+
+# Creating an empty dataframe
+result_df <- data.frame(Continent = character(0), Species = character(0), EarliestAppearance = numeric(0))
+
+
+# Defining continent names and corresponding country codes
+continents <- list(
+  "Europe" = c("AL", "AD", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IS", "IE", "IT", "XK", "LV", "LI", "LT", "LU", "MK", "MT", "MD", "MC", "ME", "NL", "NO", "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SE", "CH", "TR", "UA", "GB", "VA"),
+  "North America" = c("CA", "MX", "US"),
+  "South America" = c("AR", "BO", "BR", "CL", "CO", "EC", "GY", "PY", "PE", "SR", "UY", "VE"),
+  "Asia" = c("AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "GE", "IN", "ID", "IR", "IQ", "IL", "JP", "JO", "KZ", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "KP", "OM", "PK", "PS", "PH", "QA", "SA", "SG", "KR", "LK", "SY", "TW", "TJ", "TH", "TL", "TM", "AE", "UZ", "VN", "YE"),
+  "Africa" = c("DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CD", "CG", "CI", "DJ", "EG", "GQ", "ER", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RE", "RW", "ST", "SN", "SC", "SL", "SO", "ZA", "SS", "SD", "SZ", "TZ", "TG", "TN", "UG", "ZM", "ZW"), 
+  "Oceania" = c("AU", "NZ", "PG", "FJ", "SB", "VU", "WS", "TO", "KI", "TV", "NR", "PW", "FM", "MH")
+)
+
+# Defining the species name
+species_name <- "Solanum lycopersicum L."
+
+for (continent in names(continents)) {
+  continent_data <- tomato_d2 %>%
+    filter(countryCode %in% continents[[continent]], scientificName == species_name)
+  
+  earliest_appearance <- continent_data %>%
+    group_by(scientificName) %>%
+    summarize(first_appearance = min(year))
+  
+  if (nrow(earliest_appearance) > 0) {
+    result_df <- rbind(result_df, data.frame(Continent = continent, Species = species_name, EarliestAppearance = earliest_appearance$first_appearance))
+  }
+}
+
+# Save as a csv
+write.csv(result_df, file = "earliest_appearance_continents.csv", row.names = FALSE)
+
+print(result_df)
+```
+
+Plotting the result
+Ordering the plot form earliest to latest appearance year on a continent.
+```{r}
+
+# Ordering the data frame by EarliestAppearance in ascending order
+result_df <- result_df %>% arrange(EarliestAppearance)
+
+# Getting the order of continents based on the first appearance year
+continent_order <- result_df %>%
+  group_by(Continent) %>%
+  summarize(first_appearance = min(EarliestAppearance)) %>%
+  arrange(first_appearance) %>%
+  pull(Continent)
+
+# Defining custom order for y axis
+custom_order <- continent_order
+
+# Creating a factor variable for Continent with the custom order
+result_df$Continent <- factor(result_df$Continent, levels = custom_order)
+
+# Creating a timeline plot
+earliest_appearance_timeline <- ggplot(result_df, aes(x = EarliestAppearance, y = factor(Continent, levels = custom_order))) +
+     geom_segment(aes(xend = EarliestAppearance, yend = factor(Continent, levels = custom_order)), color = "skyblue") +
+     geom_point(size = 3, color = "darkblue") +
+     labs(title = "Timeline of Earliest Appearance of Solanum lycopersicum L.", x = "Year", y = "Continent") +
+     theme_minimal()
+
+# Saving the plot
+ggsave("earliest_appearance_timeline.png", earliest_appearance_timeline, width = 8, height = 6)
+
+print(earliest_appearance_timeline)
+
+```
+
+### Plotting the Data on a Map
+
+Europe and Asia aren't seperated yet on the plot. For the project this
+will be altered.
+
+```{r}
+# Getting the continent boundaries
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+
+# Merging data_EA data frame with continent boundaries
+merged_data <- merge(world, result_df, by.x = "continent", by.y = "Continent")
+
+
+# Creating the map
+ggplot(merged_data) +
+  geom_sf(aes(fill = EarliestAppearance)) +
+  scale_fill_gradient(low = "blue", high = "red") +
+  labs(title = "Solanum lycopersicum L. earliest appearance by continent") +
+  theme_minimal()
+
+ggsave("earliest_appearance_tomato_plot.png", plot = last_plot(), width = 8, height = 6)
+
+```
+
+### Source
+
+```{r}
+# Citation of the downloaded dataset
+gbif_citation(x= "0029248-231002084531237")
+```

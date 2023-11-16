@@ -1,0 +1,481 @@
+---
+title: "Data collection"
+author: "Chiara Huwiler"
+date: "2023-11-15"
+output: html_document
+---
+
+```{r, eval=FALSE}
+# Set up
+install.packages("rgbif")
+install.packages("dylyr")
+install.packages("httr")
+install.packages("curl")
+```
+
+```{r, eval=FALSE}
+# Load packages
+library(rgbif)
+library(dplyr)
+library(httr)
+library(curl)
+```
+
+### Data download
+
+Downloading the data of the selected Pizza ingredients through the package[@rgbif]. Attention the download is only possible with a GBIF account. Therefore all the dataset are downloaded and saved in this markdown. Those datasets than can be used during the further process as a csv file.
+
+Selected ingredients
+
+-   Wheat (Triticum)
+
+-   Olive (Olea europaea)
+
+-   Corn (Zea mays)
+
+-   Tomato (Solanum lycopersicum)
+
+-   Onion (Allium cepa)
+
+-   Paprika (Capsicum)
+
+-   Basil (Ocimum basilicum)
+
+While downloading the data already gets filter by the following markers (as recommended by [GBIF](https://docs.ropensci.org/rgbif/articles/getting_occurrence_data.html)):
+
+-   Has Geospatial Issue = FALSE for excluding data with possible bad geographical information
+
+-   Has coordinates = TRUE only getting data with valid geographical coordinates
+
+-   Removing of absent records, fossils and living specimens.
+
+-   Exlusion when the coordinate uncertainity is less than 10'000 m or the uncertainty is not specified.
+
+After the download the data gets simplified by reducing the not needed columns. The now remaining columns scientific name, year and country code get checked for missing value. If there is a missing value, the row will be delete, so that only data remains, that can be used.
+
+#### Wheat
+
+```{r}
+# Find taxon key
+name_backbone("Triticum")
+
+taxonKey <- name_backbone("Triticum")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+wheat_data <- occ_download(
+  pred("taxonKey", 2706388),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ wheat_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(wheat_d, "data_ingredients/wheat_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+wheat_d <- wheat_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+wheat_d <- wheat_d %>%
+  filter(!is.na(scientificName))
+wheat_d <- wheat_d %>%
+  filter(!is.na(year))
+wheat_d <- wheat_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(wheat_d, "data_ingredients/cleaned/wheat_d_cleaned.csv")
+```
+
+#### Olive
+
+```{r}
+# Find taxon key
+name_backbone("Olea europaea L.")
+
+taxonKey <- name_backbone("Olea europaea")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+olive_data <- occ_download(
+  pred("taxonKey", 5415040),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ olive_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(olive_d, "data_ingredients/olive_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+olive_d <- olive_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+olive_d <- olive_d %>%
+  filter(!is.na(scientificName))
+olive_d <- olive_d %>%
+  filter(!is.na(year))
+olive_d <- olive_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(olive_d, "data_ingredients/cleaned/olive_d_cleaned.csv") 
+```
+
+#### Corn
+
+```{r}
+# Find taxon key
+name_backbone("Zea mays")
+
+taxonKey <- name_backbone("Olea europaea")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+olive_data <- occ_download(
+  pred("taxonKey", 5415040),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ corn_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(corn_d, "data_ingredients/corn_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+corn_d <- corn_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+corn_d <- corn_d %>%
+  filter(!is.na(scientificName))
+corn_d <- corn_d %>%
+  filter(!is.na(year))
+corn_d <- corn_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(corn_d, "data_ingredients/cleaned/corn_d_cleaned.csv") 
+```
+
+#### Tomato
+
+```{r}
+# Find taxon key
+name_backbone("Solanum lycopersicum")
+
+taxonKey <- name_backbone("Solanum lycopersicum")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+tomato_data <- occ_download(
+  pred("taxonKey", 2930137),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ tomato_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(tomato_d, "data_ingredients/tomato_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+tomato_d <- tomato_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+tomato_d <- tomato_d %>%
+  filter(!is.na(scientificName))
+tomato_d <- tomato_d %>%
+  filter(!is.na(year))
+tomato_d <- tomato_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(tomato_d, "data_ingredients/cleaned/tomato_d_cleaned.csv") # Was "tomato_d1" in the feasibility example
+```
+
+### Onion
+
+```{r}
+# Find taxon key
+name_backbone("Allium cepa")
+
+taxonKey <- name_backbone("Allium cepa")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+onion_data <- occ_download(
+  pred("taxonKey", 2857697),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ onion_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(onion_d, "data_ingredients/onion_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+onion_d <- onion_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+onion_d <- onion_d %>%
+  filter(!is.na(scientificName))
+onion_d <- onion_d %>%
+  filter(!is.na(year))
+onion_d <- onion_d %>%
+  filter(!is.na(countryCode))
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(onion_d, "data_ingredients/cleaned/onion_d_cleaned.csv")
+```
+
+#### Paprika
+
+```{r}
+# Find taxon key
+name_backbone("Capsicum")
+
+taxonKey <- name_backbone("Capsicum")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+paprika_data <- occ_download(
+  pred("taxonKey", 2932937),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ paprika_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(paprika_d, "data_ingredients/paprika_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+paprika_d <- paprika_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+paprika_d <- paprika_d %>%
+  filter(!is.na(scientificName))
+paprika_d <- paprika_d %>%
+  filter(!is.na(year))
+paprika_d <- paprika_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(paprika_d, "data_ingredients/cleaned/paprika_d_cleaned.csv")
+
+```
+
+#### Basil ("Ocimum basilicum")
+
+```{r}
+# Find taxon key
+name_backbone("Ocimum basilicum")
+
+taxonKey <- name_backbone("Ocimum basilicum")$usageKey
+occ_search(taxonKey = taxonKey)
+
+# Downloading data
+basil_data <- occ_download(
+  pred("taxonKey", 2927096),
+  pred("hasGeospatialIssue", FALSE),
+  pred("hasCoordinate", TRUE),
+  pred("occurrenceStatus", "PRESENT"),
+  pred_not(pred_in("basisOfRecord", c("FOSSIL_SPECIMEN", "LIVING_SPECIMEN"))),
+  pred_or(
+    pred_lt("coordinateUncertaintyInMeters", 10000),
+    pred_isnull("coordinateUncertaintyInMeters")
+  ),
+  format = "SIMPLE_CSV"
+)
+
+# retriving data
+ basil_d <- occ_download_get('0029248-231002084531237') %>%
+    occ_download_import()
+
+# saving data
+ write.csv(basil_d, "data_ingredients/basil_d1.csv")
+```
+
+Reducing the dataset to only the needed data
+
+```{r}
+# Removing not needed columns
+basil_d <- basil_d %>%
+  select(scientificName, countryCode, year)  
+
+```
+
+Handling missing Data
+
+```{r}
+# Deleting all rows with missing scientific name, year or country code
+basil_d <- basil_d %>%
+  filter(!is.na(scientificName))
+basil_d <- basil_d %>%
+  filter(!is.na(year))
+basil_d <- basil_d %>%
+  filter(!is.na(countryCode))
+
+
+```
+
+Creating CSV data
+
+```{r}
+write.csv(basil_d, "data_ingredients/cleaned/basil_d_cleaned.csv")
+
+```
+
+# Citation
+```{r}
+gbif_citation(x= "0029248-231002084531237")
+```
+
