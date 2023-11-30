@@ -1,0 +1,249 @@
+﻿Region_Code;Region Name;Sub-region Code;Sub-region Name;ISO_alpha2_Code
+2;Africa;15;Northern Africa;DZ
+2;Africa;15;Northern Africa;EG
+2;Africa;15;Northern Africa;LY
+2;Africa;15;Northern Africa;MA
+2;Africa;15;Northern Africa;SD
+2;Africa;15;Northern Africa;TN
+2;Africa;15;Northern Africa;EH
+2;Africa;202;Sub-Saharan Africa;IO
+2;Africa;202;Sub-Saharan Africa;BI
+2;Africa;202;Sub-Saharan Africa;KM
+2;Africa;202;Sub-Saharan Africa;DJ
+2;Africa;202;Sub-Saharan Africa;ER
+2;Africa;202;Sub-Saharan Africa;ET
+2;Africa;202;Sub-Saharan Africa;TF
+2;Africa;202;Sub-Saharan Africa;KE
+2;Africa;202;Sub-Saharan Africa;MG
+2;Africa;202;Sub-Saharan Africa;MW
+2;Africa;202;Sub-Saharan Africa;MU
+2;Africa;202;Sub-Saharan Africa;YT
+2;Africa;202;Sub-Saharan Africa;MZ
+2;Africa;202;Sub-Saharan Africa;RE
+2;Africa;202;Sub-Saharan Africa;RW
+2;Africa;202;Sub-Saharan Africa;SC
+2;Africa;202;Sub-Saharan Africa;SO
+2;Africa;202;Sub-Saharan Africa;SS
+2;Africa;202;Sub-Saharan Africa;UG
+2;Africa;202;Sub-Saharan Africa;TZ
+2;Africa;202;Sub-Saharan Africa;ZM
+2;Africa;202;Sub-Saharan Africa;ZW
+2;Africa;202;Sub-Saharan Africa;AO
+2;Africa;202;Sub-Saharan Africa;CM
+2;Africa;202;Sub-Saharan Africa;CF
+2;Africa;202;Sub-Saharan Africa;TD
+2;Africa;202;Sub-Saharan Africa;CG
+2;Africa;202;Sub-Saharan Africa;CD
+2;Africa;202;Sub-Saharan Africa;GQ
+2;Africa;202;Sub-Saharan Africa;GA
+2;Africa;202;Sub-Saharan Africa;ST
+2;Africa;202;Sub-Saharan Africa;BW
+2;Africa;202;Sub-Saharan Africa;SZ
+2;Africa;202;Sub-Saharan Africa;LS
+2;Africa;202;Sub-Saharan Africa;NA
+2;Africa;202;Sub-Saharan Africa;ZA
+2;Africa;202;Sub-Saharan Africa;BJ
+2;Africa;202;Sub-Saharan Africa;BF
+2;Africa;202;Sub-Saharan Africa;CV
+2;Africa;202;Sub-Saharan Africa;CI
+2;Africa;202;Sub-Saharan Africa;GM
+2;Africa;202;Sub-Saharan Africa;GH
+2;Africa;202;Sub-Saharan Africa;GN
+2;Africa;202;Sub-Saharan Africa;GW
+2;Africa;202;Sub-Saharan Africa;LR
+2;Africa;202;Sub-Saharan Africa;ML
+2;Africa;202;Sub-Saharan Africa;MR
+2;Africa;202;Sub-Saharan Africa;NE
+2;Africa;202;Sub-Saharan Africa;NG
+2;Africa;202;Sub-Saharan Africa;SH
+2;Africa;202;Sub-Saharan Africa;SN
+2;Africa;202;Sub-Saharan Africa;SL
+2;Africa;202;Sub-Saharan Africa;TG
+19;Americas;419;Latin America and the Caribbean;AI
+19;Americas;419;Latin America and the Caribbean;AG
+19;Americas;419;Latin America and the Caribbean;AW
+19;Americas;419;Latin America and the Caribbean;BS
+19;Americas;419;Latin America and the Caribbean;BB
+19;Americas;419;Latin America and the Caribbean;BQ
+19;Americas;419;Latin America and the Caribbean;VG
+19;Americas;419;Latin America and the Caribbean;KY
+19;Americas;419;Latin America and the Caribbean;CU
+19;Americas;419;Latin America and the Caribbean;CW
+19;Americas;419;Latin America and the Caribbean;DM
+19;Americas;419;Latin America and the Caribbean;DO
+19;Americas;419;Latin America and the Caribbean;GD
+19;Americas;419;Latin America and the Caribbean;GP
+19;Americas;419;Latin America and the Caribbean;HT
+19;Americas;419;Latin America and the Caribbean;JM
+19;Americas;419;Latin America and the Caribbean;MQ
+19;Americas;419;Latin America and the Caribbean;MS
+19;Americas;419;Latin America and the Caribbean;PR
+19;Americas;419;Latin America and the Caribbean;BL
+19;Americas;419;Latin America and the Caribbean;KN
+19;Americas;419;Latin America and the Caribbean;LC
+19;Americas;419;Latin America and the Caribbean;MF
+19;Americas;419;Latin America and the Caribbean;VC
+19;Americas;419;Latin America and the Caribbean;SX
+19;Americas;419;Latin America and the Caribbean;TT
+19;Americas;419;Latin America and the Caribbean;TC
+19;Americas;419;Latin America and the Caribbean;VI
+19;Americas;419;Latin America and the Caribbean;BZ
+19;Americas;419;Latin America and the Caribbean;CR
+19;Americas;419;Latin America and the Caribbean;SV
+19;Americas;419;Latin America and the Caribbean;GT
+19;Americas;419;Latin America and the Caribbean;HN
+19;Americas;419;Latin America and the Caribbean;MX
+19;Americas;419;Latin America and the Caribbean;NI
+19;Americas;419;Latin America and the Caribbean;PA
+19;Americas;419;Latin America and the Caribbean;AR
+19;Americas;419;Latin America and the Caribbean;BO
+19;Americas;419;Latin America and the Caribbean;BV
+19;Americas;419;Latin America and the Caribbean;BR
+19;Americas;419;Latin America and the Caribbean;CL
+19;Americas;419;Latin America and the Caribbean;CO
+19;Americas;419;Latin America and the Caribbean;EC
+19;Americas;419;Latin America and the Caribbean;FK
+19;Americas;419;Latin America and the Caribbean;GF
+19;Americas;419;Latin America and the Caribbean;GY
+19;Americas;419;Latin America and the Caribbean;PY
+19;Americas;419;Latin America and the Caribbean;PE
+19;Americas;419;Latin America and the Caribbean;GS
+19;Americas;419;Latin America and the Caribbean;SR
+19;Americas;419;Latin America and the Caribbean;UY
+19;Americas;419;Latin America and the Caribbean;VE
+19;Americas;21;Northern America;BM
+19;Americas;21;Northern America;CA
+19;Americas;21;Northern America;GL
+19;Americas;21;Northern America;PM
+19;Americas;21;Northern America;US
+;;;;AQ
+142;Asia;143;Central Asia;KZ
+142;Asia;143;Central Asia;KG
+142;Asia;143;Central Asia;TJ
+142;Asia;143;Central Asia;TM
+142;Asia;143;Central Asia;UZ
+142;Asia;30;Eastern Asia;CN
+142;Asia;30;Eastern Asia;HK
+142;Asia;30;Eastern Asia;MO
+142;Asia;30;Eastern Asia;KP
+142;Asia;30;Eastern Asia;JP
+142;Asia;30;Eastern Asia;MN
+142;Asia;30;Eastern Asia;KR
+142;Asia;35;South-eastern Asia;BN
+142;Asia;35;South-eastern Asia;KH
+142;Asia;35;South-eastern Asia;ID
+142;Asia;35;South-eastern Asia;LA
+142;Asia;35;South-eastern Asia;MY
+142;Asia;35;South-eastern Asia;MM
+142;Asia;35;South-eastern Asia;PH
+142;Asia;35;South-eastern Asia;SG
+142;Asia;35;South-eastern Asia;TH
+142;Asia;35;South-eastern Asia;TL
+142;Asia;35;South-eastern Asia;VN
+142;Asia;34;Southern Asia;AF
+142;Asia;34;Southern Asia;BD
+142;Asia;34;Southern Asia;BT
+142;Asia;34;Southern Asia;IN
+142;Asia;34;Southern Asia;IR
+142;Asia;34;Southern Asia;MV
+142;Asia;34;Southern Asia;NP
+142;Asia;34;Southern Asia;PK
+142;Asia;34;Southern Asia;LK
+142;Asia;145;Western Asia;AM
+142;Asia;145;Western Asia;AZ
+142;Asia;145;Western Asia;BH
+142;Asia;145;Western Asia;CY
+142;Asia;145;Western Asia;GE
+142;Asia;145;Western Asia;IQ
+142;Asia;145;Western Asia;IL
+142;Asia;145;Western Asia;JO
+142;Asia;145;Western Asia;KW
+142;Asia;145;Western Asia;LB
+142;Asia;145;Western Asia;OM
+142;Asia;145;Western Asia;QA
+142;Asia;145;Western Asia;SA
+142;Asia;145;Western Asia;PS
+142;Asia;145;Western Asia;SY
+142;Asia;145;Western Asia;TR
+142;Asia;145;Western Asia;AE
+142;Asia;145;Western Asia;YE
+150;Europe;151;Eastern Europe;BY
+150;Europe;151;Eastern Europe;BG
+150;Europe;151;Eastern Europe;CZ
+150;Europe;151;Eastern Europe;HU
+150;Europe;151;Eastern Europe;PL
+150;Europe;151;Eastern Europe;MD
+150;Europe;151;Eastern Europe;RO
+150;Europe;151;Eastern Europe;RU
+150;Europe;151;Eastern Europe;SK
+150;Europe;151;Eastern Europe;UA
+150;Europe;154;Northern Europe;AX
+150;Europe;154;Northern Europe;DK
+150;Europe;154;Northern Europe;EE
+150;Europe;154;Northern Europe;FO
+150;Europe;154;Northern Europe;FI
+150;Europe;154;Northern Europe;GG
+150;Europe;154;Northern Europe;IS
+150;Europe;154;Northern Europe;IE
+150;Europe;154;Northern Europe;IM
+150;Europe;154;Northern Europe;JE
+150;Europe;154;Northern Europe;LV
+150;Europe;154;Northern Europe;LT
+150;Europe;154;Northern Europe;NO
+150;Europe;154;Northern Europe;SJ
+150;Europe;154;Northern Europe;SE
+150;Europe;154;Northern Europe;GB
+150;Europe;39;Southern Europe;AL
+150;Europe;39;Southern Europe;AD
+150;Europe;39;Southern Europe;BA
+150;Europe;39;Southern Europe;HR
+150;Europe;39;Southern Europe;GI
+150;Europe;39;Southern Europe;GR
+150;Europe;39;Southern Europe;VA
+150;Europe;39;Southern Europe;IT
+150;Europe;39;Southern Europe;MT
+150;Europe;39;Southern Europe;ME
+150;Europe;39;Southern Europe;MK
+150;Europe;39;Southern Europe;PT
+150;Europe;39;Southern Europe;SM
+150;Europe;39;Southern Europe;RS
+150;Europe;39;Southern Europe;SI
+150;Europe;39;Southern Europe;ES
+150;Europe;155;Western Europe;AT
+150;Europe;155;Western Europe;BE
+150;Europe;155;Western Europe;FR
+150;Europe;155;Western Europe;DE
+150;Europe;155;Western Europe;LI
+150;Europe;155;Western Europe;LU
+150;Europe;155;Western Europe;MC
+150;Europe;155;Western Europe;NL
+150;Europe;155;Western Europe;CH
+9;Oceania;53;Australia and New Zealand;AU
+9;Oceania;53;Australia and New Zealand;CX
+9;Oceania;53;Australia and New Zealand;CC
+9;Oceania;53;Australia and New Zealand;HM
+9;Oceania;53;Australia and New Zealand;NZ
+9;Oceania;53;Australia and New Zealand;NF
+9;Oceania;54;Melanesia;FJ
+9;Oceania;54;Melanesia;NC
+9;Oceania;54;Melanesia;PG
+9;Oceania;54;Melanesia;SB
+9;Oceania;54;Melanesia;VU
+9;Oceania;57;Micronesia;GU
+9;Oceania;57;Micronesia;KI
+9;Oceania;57;Micronesia;MH
+9;Oceania;57;Micronesia;FM
+9;Oceania;57;Micronesia;NR
+9;Oceania;57;Micronesia;MP
+9;Oceania;57;Micronesia;PW
+9;Oceania;57;Micronesia;UM
+9;Oceania;61;Polynesia;AS
+9;Oceania;61;Polynesia;CK
+9;Oceania;61;Polynesia;PF
+9;Oceania;61;Polynesia;NU
+9;Oceania;61;Polynesia;PN
+9;Oceania;61;Polynesia;WS
+9;Oceania;61;Polynesia;TK
+9;Oceania;61;Polynesia;TO
+9;Oceania;61;Polynesia;TV
+9;Oceania;61;Polynesia;WF
