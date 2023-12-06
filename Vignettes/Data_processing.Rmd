@@ -57,8 +57,8 @@ Region Codes
 
 
 ```{r}
-combined_data <- read.csv("Data_ingredients/cleaned/combined_data.csv")
-UNSD_M49 <- read.csv("Data/UNSD_M49.csv")
+combined_data <- read.csv("../Data_ingredients/cleaned/combined_data.csv")
+UNSD_M49 <- read.csv("../Data/UNSD_M49.csv")
 
 # Remove rows with NA in countryCode
 combined_data_e <- combined_data[complete.cases(combined_data$countryCode), ]
@@ -105,11 +105,10 @@ filtered_data <- merged_data %>%
   filter(scientificName %in% species_of_interest)
 
 # Save merged_data to the "Data" folder
-write.csv(merged_data, file.path("Data", "merged_data.csv"), row.names = FALSE)
+write.csv(merged_data, file.path("../Data", "merged_data.csv"), row.names = FALSE)
 
 # Save filtered_data to the "Data" folder
-write.csv(filtered_data, file.path("Data", "filtered_data.csv"), row.names = FALSE)
-
+write.csv(filtered_data, file.path("../Data", "filtered_data.csv"), row.names = FALSE)
 
 ```
 
@@ -149,7 +148,7 @@ for (species in species_of_interest) {
   result_list[[species]] <- species_results
   
   # Saving results to individual CSV files
-  write.csv(species_results, file = paste0("EAC_ingredients/EAC/", gsub(" ", "_", species), "_EAC.csv"), row.names = FALSE)
+  write.csv(species_results, file = paste0("../EAC_ingredients/EAC/", gsub(" ", "_", species), "_EAC.csv"), row.names = FALSE)
   
   # Print results for the current species
   print(species_results)
@@ -169,7 +168,7 @@ plot_list <- list()
 for (species_name in species_of_interest) {
     
     # Reading the corresponding EAC CSV file
-    species_results <- read.csv(file.path("EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+    species_results <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
     
     # Ordering the data frame by EarliestYear in ascending order
     species_results <- species_results %>% arrange(earliest_year)
@@ -195,7 +194,7 @@ for (species_name in species_of_interest) {
         theme_minimal()
     
     # Save the plot as a PNG file
-    ggsave(paste0("EAC_ingredients/timeline_plots/timeline_", gsub(" ", "_", species_name), ".png"), timeline_plot, width = 8, height = 6)
+    ggsave(paste0("../EAC_ingredients/timeline_plots/timeline_", gsub(" ", "_", species_name), ".png"), timeline_plot, width = 8, height = 6)
     
     # Print the plot for the current species
     print(timeline_plot)
@@ -204,7 +203,7 @@ for (species_name in species_of_interest) {
 
 
 ### Plotting the Data on a Map
-According to the UN Data, Russia is geographical part of Europe and is for that handled as an European country. 
+Here UN Gegraphical Data is used for specifing the continents.
 
 ```{r}
 # Loading world data
@@ -220,7 +219,7 @@ world <- world %>%
 # Function to create a map plot for a species
 create_species_map <- function(species_name) {
   # Reading the corresponding EAC CSV file
-  species_result <- read.csv(file.path("EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+  species_result <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
   
   # Ordering the data frame by EarliestAppearance in ascending order
   species_result <- species_result %>% arrange(earliest_year)
@@ -246,15 +245,16 @@ create_species_map <- function(species_name) {
     geom_sf(aes(fill = factor(earliest_year))) +
     scale_fill_brewer(palette = "YlOrRd") +
     labs(title = paste(species_name),
-         fill = "Year of Earliest Appearance") +
+         fill = "Year of Earliest Appearance per continent") +
     theme_minimal() +
-    theme(plot.background = element_rect(fill = "white"))
+    theme(plot.background = element_rect(fill = "white")) +
+          coord_sf(label_axes = "both")
   
   # Printing the map plot
   print(map_plot)
   
   # Creating a folder for each species
-  species_folder <- paste0("EAC_ingredients/maps/EAC_", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
+  species_folder <- paste0("../EAC_ingredients/maps/EAC_", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
   dir.create(species_folder, showWarnings = FALSE)
   
   # Saving the map plot
@@ -279,7 +279,7 @@ map_plot_list <- list()
 for (species_name in species_of_interest) {
     
     # Reading the corresponding EAC CSV file
-    species_results <- read.csv(file.path("EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+    species_results <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
     
     # Ordering the data frame by EarliestAppearance in ascending order
     species_results <- species_results %>% arrange(earliest_year)
@@ -301,7 +301,7 @@ for (species_name in species_of_interest) {
     world <- ne_countries(scale = "medium", returnclass = "sf")
     
     # Creating a folder for each species 
-    species_folder <- paste0("EAC_ingredients/maps/EAC_", gsub(" ", "_", species_name), "/")
+    species_folder <- paste0("../EAC_ingredients/maps/EAC_", gsub(" ", "_", species_name), "/")
     dir.create(species_folder, showWarnings = FALSE)
     
     # Looping over unique years
@@ -310,15 +310,15 @@ for (species_name in species_of_interest) {
         # Merging species_results data frame with continent boundaries
         merged_data <- merge(world, species_results, by.x = "continent", by.y = "continent")
         
-        # Creating the map
+       # Creating the map
         map_plot <- ggplot(merged_data) +
             geom_sf(aes(fill = ifelse(earliest_year == year, factor(earliest_year), "Other")),
                     show.legend = "color") +
             scale_fill_brewer(palette = "YlOrRd", name = "Year of Earliest Appearance", breaks = unique(species_results$earliest_year)) +
             labs(title = paste(species_name, "- Year: ", year)) +
             theme_minimal() +
-            theme(plot.background = element_rect(fill = "white"))
-    
+            theme(plot.background = element_rect(fill = "white")) 
+
         # Saving the map plot to the list
         map_plot_list[[paste(species_name, year, sep = "_")]] <- map_plot
         
@@ -331,12 +331,13 @@ for (species_name in species_of_interest) {
 }
 
 ```
+        
 
 # Animation
 ```{r}
 
 # Directory path for the maps
-maps_directory <- "EAC_ingredients/maps/"
+maps_directory <- "../EAC_ingredients/maps/"
 
 # Listing all species folders
 species_folders <- list.files(maps_directory, full.names = TRUE)
@@ -348,7 +349,7 @@ animated_gifs <- list()
 for (species_folder in species_folders) {
   
   # Getting species name from the folder
-  species_name <- gsub("EAC_ingredients/maps/EAC_", "", species_folder)
+  species_name <- gsub("../EAC_ingredients/maps/EAC_", "", species_folder)
   
   # Listing all map files in the species folder
   map_files <- list.files(species_folder, pattern = ".png", full.names = TRUE)
@@ -357,7 +358,7 @@ for (species_folder in species_folders) {
   animated_gif <- image_animate(image_read(map_files), fps = 1)
   
   # Saving the animated GIF
-  gif_file <- paste0("EAC_ingredients/animations/", "animated_", gsub(" ", "_", species_name), ".gif")
+  gif_file <- paste0("../EAC_ingredients/animations/", "animated_", gsub(" ", "_", species_name), ".gif")
   image_write(animated_gif, gif_file)
   
   # Storing the animated GIF in the list
