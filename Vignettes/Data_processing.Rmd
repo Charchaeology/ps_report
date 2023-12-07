@@ -20,6 +20,10 @@ install.packages("rnaturalearth")
 install.packages("rnaturalearthdata")
 install.packages("RColorBrewer")
 install.packages("magick")
+install.packages("viridis")
+devtools::install_version("gganimate", version = "1.0.7")
+devtools::install_version("transformr", version = "0.1.3")
+install.packages("sf")
 ```
 
 ```{r}
@@ -35,6 +39,9 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(RColorBrewer)
 library(magick)
+library(gganimate)
+library(transformr)
+library(sf)
 ```
 
 ### Finding earliest apperance
@@ -54,7 +61,6 @@ Region Codes
 -   Oceania 009
 
 -   Africa 002
-
 
 ```{r}
 combined_data <- read.csv("../Data_ingredients/cleaned/combined_data.csv")
@@ -112,7 +118,6 @@ write.csv(filtered_data, file.path("../Data", "filtered_data.csv"), row.names = 
 
 ```
 
-
 ```{r}
 # Create an empty list to store results for each species
 result_list <- list()
@@ -155,11 +160,12 @@ for (species in species_of_interest) {
 }
 ```
 
-
 ## Plotting the result
 
 ### And ordering the continents form earliest to latest appearance year.
--> use line plot?
+
+-\> use line plot?
+
 ```{r}
 # Creating an empty list to store plots for each species
 plot_list <- list()
@@ -202,7 +208,53 @@ for (species_name in species_of_interest) {
 ```
 
 
+```{r}
+# Animating the plots
+
+
+# Function to create an animated plot for a species
+create_species_animation <- function(species_name) {
+  # Reading the corresponding EAC CSV file
+  species_result <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+  
+  # Ordering the data frame by EarliestAppearance in ascending order
+  species_result <- species_result %>% arrange(earliest_year)
+  
+  # Getting the order of continents based on the first appearance year
+  continent_order <- species_result %>%
+    group_by(continent) %>%
+    summarize(first_appearance = min(earliest_year)) %>%
+    arrange(first_appearance) %>%
+    pull(continent)
+  
+  # Defining custom order for y-axis
+  custom_order <- continent_order
+  
+  # Creating a factor variable for Continent with the custom order
+  species_result$continent <- factor(species_result$continent, levels = custom_order)
+  
+  # Creating the animated plot
+  animated_plot <- ggplot(species_result, aes(x = earliest_year, y = factor(continent, levels = custom_order))) +
+    geom_segment(aes(xend = earliest_year, yend = factor(continent, levels = custom_order)), color = "skyblue") +
+    geom_point(aes(color = continent), size = 3) +
+    labs(title = paste("Timeline of Earliest Appearance of", species_name), x = "Year", y = "Continent", color = "Continent") +
+    theme_minimal() +
+    transition_states(earliest_year, transition_length = 2, state_length = 1)
+  
+  # Save the animation as a GIF file
+  anim_save(paste0("../EAC_ingredients/animations/plots", gsub(" ", "_", species_name), "_animation.gif"), animate(animated_plot), width = 800, height = 600, duration = 10)
+  
+  # Print the animated plot for the current species
+  print(animate(animated_plot))
+}
+
+# Looping over species names and create animations
+lapply(species_of_interest, create_species_animation)
+
+```
+
 ### Plotting the Data on a Map
+
 Here UN Gegraphical Data is used for specifing the continents.
 
 ```{r}
@@ -243,7 +295,7 @@ create_species_map <- function(species_name) {
   # Creating the map
   map_plot <- ggplot(merged_data) +
     geom_sf(aes(fill = factor(earliest_year))) +
-    scale_fill_brewer(palette = "YlOrRd") +
+    scale_fill_brewer(palette = 1) +
     labs(title = paste(species_name),
          fill = "Year of Earliest Appearance per continent") +
     theme_minimal() +
@@ -268,103 +320,84 @@ lapply(species_of_interest, create_species_map)
 ```
 
 
-Plotting each year individually
-
-
+## Animating the maps
 ```{r}
-# Initializing map_plot_list
-map_plot_list <- list()
+# Loading world data
+world <- ne_countries(scale = "medium", returnclass = "sf")
 
-# Looping over species names
-for (species_name in species_of_interest) {
-    
-    # Reading the corresponding EAC CSV file
-    species_results <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
-    
-    # Ordering the data frame by EarliestAppearance in ascending order
-    species_results <- species_results %>% arrange(earliest_year)
-    
-    # Getting the order of continents based on the first appearance year
-    continent_order <- species_results %>%
-        group_by(continent) %>%
-        summarize(first_appearance = min(earliest_year)) %>%
-        arrange(first_appearance) %>%
-        pull(continent)
-    
-    # Defining custom order for y axis
-    custom_order <- continent_order
-    
-    # Creating a factor variable for Continent with the custom order
-    species_results$continent <- factor(species_results$continent, levels = custom_order)
-    
-    # Getting the continent boundaries
-    world <- ne_countries(scale = "medium", returnclass = "sf")
-    
-    # Creating a folder for each species 
-    species_folder <- paste0("../EAC_ingredients/maps/EAC_", gsub(" ", "_", species_name), "/")
-    dir.create(species_folder, showWarnings = FALSE)
-    
-    # Looping over unique years
-    for (year in unique(species_results$earliest_year)) {
-    
-        # Merging species_results data frame with continent boundaries
-        merged_data <- merge(world, species_results, by.x = "continent", by.y = "continent")
-        
-       # Creating the map
-        map_plot <- ggplot(merged_data) +
-            geom_sf(aes(fill = ifelse(earliest_year == year, factor(earliest_year), "Other")),
-                    show.legend = "color") +
-            scale_fill_brewer(palette = "YlOrRd", name = "Year of Earliest Appearance", breaks = unique(species_results$earliest_year)) +
-            labs(title = paste(species_name, "- Year: ", year)) +
-            theme_minimal() +
-            theme(plot.background = element_rect(fill = "white")) 
+# Standardizing continent names in world data
+world <- world %>%
+  mutate(region_un = case_when(
+    region_un %in% c("Asia", "Oceania", "South America", "North America", "Africa", "Europe") ~ region_un,
+    TRUE ~ "Other"
+  ))
 
-        # Saving the map plot to the list
-        map_plot_list[[paste(species_name, year, sep = "_")]] <- map_plot
-        
-        # Printing the map plot for the current species, continent, and year
-        print(map_plot)
-        
-        # Saving the map plot
-        ggsave(paste0(species_folder, "earliest_appearance_", gsub(" ", "_", species_name), "_", year, ".png"), map_plot, width = 8, height = 6)
-    }
+# Function to create a map plot for a species
+create_species_map <- function(species_name) {
+  # Reading the corresponding EAC CSV file
+  species_result <- read.csv(file.path("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+  
+  # Ordering the data frame by EarliestAppearance in ascending order
+  species_result <- species_result %>% arrange(earliest_year)
+  
+  # Getting the order of continents based on the first appearance year
+  continent_order <- species_result %>%
+    group_by(continent) %>%
+    summarize(first_appearance = min(earliest_year)) %>%
+    arrange(first_appearance) %>%
+    pull(continent)
+  
+  # Defining custom order for y-axis
+  custom_order <- continent_order
+  
+  # Creating a factor variable for Continent with the custom order
+  species_result$continent <- factor(species_result$continent, levels = custom_order)
+  
+  # Merging species_result data frame with continent boundaries
+  merged_data <- merge(world, species_result, by.x = "continent", by.y = "continent")
+  
+  # Creating the map
+  map_plot  <-  ggplot() +
+      borders("world", colour = "gray85", fill = "gray80") +
+      geom_sf(data = merged_data,aes(fill = earliest_year)) +
+      scale_fill_viridis_c() +
+      labs(title = paste(species_name),
+           fill = "Year of First \nAppearance") +
+      theme_minimal() +
+      theme(plot.background = element_rect(fill = "white"),
+            legend.background=element_blank(),
+            axis.title=element_blank(),
+            legend.key.size = unit(0.6, 'cm'),
+            legend.title=element_text(size=9), 
+            legend.text=element_text(size=8)) +
+      coord_sf(label_axes = "both")
+  
+  # Printing the map plot
+  print(map_plot)
+  
+  # Creating a folder for each species
+  species_folder <- paste0("../EAC_ingredients/maps/EAC_", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
+  dir.create(species_folder, showWarnings = FALSE)
+  
+  # Saving the map plot
+  ggsave(paste0(species_folder, "earliest_appearance.png"), plot = map_plot, width = 8, height = 6)
+  
+  # Animating the map
+  animated_map  <-  map_plot +
+   transition_manual(frames=earliest_year,cumulative = TRUE) +
+   labs(title = paste(species_name),
+          subtitle = 'Year: {current_frame}')
+  
+  # Printing the map plot
+  print(animated_map)
+  
+  # Saving the map plot
+  anim_save(paste0(species_folder, "annimated_map.gif"), plot = animated_map, width = 8, height = 6)
+  
 }
 
-```
-        
-
-# Animation
-```{r}
-
-# Directory path for the maps
-maps_directory <- "../EAC_ingredients/maps/"
-
-# Listing all species folders
-species_folders <- list.files(maps_directory, full.names = TRUE)
-
-# Initializin a list to store animated GIFs for each species
-animated_gifs <- list()
-
-# Looping through each species folder
-for (species_folder in species_folders) {
-  
-  # Getting species name from the folder
-  species_name <- gsub("../EAC_ingredients/maps/EAC_", "", species_folder)
-  
-  # Listing all map files in the species folder
-  map_files <- list.files(species_folder, pattern = ".png", full.names = TRUE)
-  
-  # Creating an animated GIF from the map files
-  animated_gif <- image_animate(image_read(map_files), fps = 1)
-  
-  # Saving the animated GIF
-  gif_file <- paste0("../EAC_ingredients/animations/", "animated_", gsub(" ", "_", species_name), ".gif")
-  image_write(animated_gif, gif_file)
-  
-  # Storing the animated GIF in the list
-  animated_gifs[[species_name]] <- gif_file
-}
+# Looping over species names and create map plots
+lapply(species_of_interest, create_species_map)
 
 
 ```
-
