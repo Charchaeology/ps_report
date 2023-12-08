@@ -2,12 +2,16 @@
 title: "Data_processing"
 author: "Chiara Huwiler"
 date: "2023-11-30"
-output: html_document
+output: 
+  html_document:
+        toc: true
+        toc_depth: 2
+        number_sections: true
+        code_folding: hide
+bibliography: references.bib
 ---
 
-### Setting up
-
-```{r, eval=FALSE}
+```{r, setup, include=FALSE}
 # Set up
 install.packages("rgbif")
 install.packages("dplyr")
@@ -43,6 +47,16 @@ library(gganimate)
 library(transformr)
 library(sf)
 ```
+
+This is the report for the semester project of the course ´Proseminar in Geocomputation and Earth Observation´ and shows an Applied Geo-Data Science project.
+
+# Introduction
+
+Background, Relevance, Motivation
+
+# Methods and Data
+
+Describing data (scale, source), methods
 
 ### Finding earliest apperance
 
@@ -400,3 +414,11 @@ lapply(species_of_interest, create_species_map)
 
 
 ```
+
+# Results
+
+Reports the results in a logical order that facilitates reading - from the general pattern to the details. Basic and central finding first, then the nuance.
+
+# Discussion
+
+Explain what the results mean in relation to the question stated in the Introduction. Discuss caveats, compare to earlier findings, and explain the relevance of your results.
