@@ -207,7 +207,6 @@ for (species_name in species_of_interest) {
 }
 ```
 
-
 ```{r}
 # Animating the plots
 
@@ -319,8 +318,8 @@ lapply(species_of_interest, create_species_map)
 
 ```
 
-
 ## Animating the maps
+
 ```{r}
 # Loading world data
 world <- ne_countries(scale = "medium", returnclass = "sf")
