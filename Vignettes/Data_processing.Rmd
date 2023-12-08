@@ -207,7 +207,6 @@ for (species_name in species_of_interest) {
 }
 ```
 
-
 ```{r}
 # Animating the plots
 
@@ -319,8 +318,8 @@ lapply(species_of_interest, create_species_map)
 
 ```
 
-
 ## Animating the maps
+
 ```{r}
 # Loading world data
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -392,7 +391,7 @@ create_species_map <- function(species_name) {
   print(animated_map)
   
   # Saving the map plot
-  anim_save(paste0(species_folder, "annimated_map.gif"), plot = animated_map, width = 8, height = 6)
+  anim_save(paste0(species_folder, "animated_map.gif"), plot = animated_map, width = 8, height = 6)
   
 }
 
