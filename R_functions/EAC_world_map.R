@@ -33,10 +33,9 @@ create_species_map <- function(species_name) {
     theme(plot.background = element_rect(fill = "white")) +
     coord_sf(label_axes = "both")
   
-  # Printing the map plot
   print(map_plot)
   
-  # Creating a folder for each species
+   # Creating a folder for each species
   species_folder <- here("EAC_ingredients", "maps", paste0("EAC_", gsub(" ", "_", gsub("\\.", "", species_name))))
   dir.create(species_folder, showWarnings = FALSE)
   
@@ -45,5 +44,5 @@ create_species_map <- function(species_name) {
 }
 
 # Apply the function to each species
-lapply(species_of_interest, create_species_map)
+# lapply(species_of_interest, create_species_map)
 
