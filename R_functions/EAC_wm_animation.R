@@ -12,7 +12,7 @@ world <- world %>%
 create_species_map <- function(species_name) {
   
   # Reading the corresponding EAC CSV file
-  species_result <- read.csv(paste0("../EAC_ingredients/EAC/", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
+  species_result <- read.csv(here("EAC_ingredients", "EAC", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
   
   # Ordering the data frame by EarliestAppearance in ascending order
   species_result <- species_result %>% arrange(earliest_year)
@@ -53,7 +53,7 @@ create_species_map <- function(species_name) {
   print(map_plot)
   
   # Creating a folder for each species
-  species_folder <- paste0("../EAC_ingredients/maps/EAC_", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
+  species_folder <- here("EAC_ingredients", "maps", "EAC_", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
   dir.create(species_folder, showWarnings = FALSE)
   
   # Saving the map plot
@@ -69,6 +69,6 @@ create_species_map <- function(species_name) {
   print(animated_map)
   
   # Saving the map plot
-  anim_save(paste0(species_folder, "animated_map.gif"), plot = animated_map, width = 8, height = 6)
+  anim_save(here(species_folder, "animated_map.gif"), plot = animated_map, width = 8, height = 6)
   
 }

@@ -589,14 +589,3 @@ onion_d_cleaned.csv
 paprika_d_cleaned.csv
 tomato_d_cleaned.csv
 wheat_d_cleaned.csv
-
-
-
-
-
-# Citation
-```{r}
-gbif_citation(x= "0029248-231002084531237")
-```
-
-

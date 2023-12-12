@@ -2,7 +2,6 @@
 plot_list <- list()
 
 # Function to plot the EAC
-
 for (species_name in species_of_interest) {
   
   
