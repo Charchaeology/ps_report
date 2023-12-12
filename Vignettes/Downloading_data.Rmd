@@ -118,7 +118,7 @@ Creating CSV data
 write.csv(wheat_d, "data_ingredients/cleaned/wheat_d_cleaned.csv")
 ```
 
-<<<<<<< HEAD
+
 ```{r}
 # Citation
 gbif_citation(x= "0000122-231120084113126")
@@ -190,7 +190,7 @@ Creating CSV data
 write.csv(olive_d, "data_ingredients/cleaned/olive_d_cleaned.csv") 
 ```
 
-<<<<<<< HEAD
+
 ```{r}
 # Citation
 gbif_citation(x= "0000365-231120084113126")
