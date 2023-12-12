@@ -10,13 +10,12 @@ output:
 bibliography: references.bib
 ---
 
-```{r load_packages, echo=FALSE}
+```{r load_packages, echo=FALSE, message=FALSE, warning=FALSE}
 # Loading packages
 library(rgbif)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
-library(stringr)
 library(lubridate)
 library(countrycode)
 library(rnaturalearth)
@@ -45,7 +44,7 @@ Exploring the global history of the ingredients of a pizza helps us not only to 
 
 As I said in the introduction, there are a lot of different ways to prepare a pizza. For this project, an easy-to-prepare dough is used from [Betty Bossi](https://www.bettybossi.ch/de/Home/Index), which is a cooking recipe provider. This [recipe](https://www.bettybossi.ch/de/Rezept/ShowRezept/BB_ITKU120801_0243A-40-de) contains water, salt, flour (mostly wheat), yeast, and olive oil. Possible vegetarian topics include corn, tomatoes, onions, paprika, cheese, and basil. For this project, only species (or scientific genera) are considered and no processed food. So the ingredients considered are: wheat (Triticum), olive (Olea europaea), corn (Zea mays), tomatoes (Solanum lycopersicum), onions (Allium cepa), paprika (Capsicum), and basil (Ocimum basilicum).
 
-To get the needed data about the ingredients, the database "Global Biodiversity Information Facility" [(GBIF)](https://www.gbif.org/) is used as the basis for this project. GBIF was originally planned to be an international mechanism to make biodiversity data and information accessible worldwide. And then it was established in 2001 with the approval of the Organization for Economic Cooperation and Development (OECD). GBIF provides data on all types of life on earth and, for this project, especially important records on occurrences. These occurrence records are here used to identify the earliest appearance of a species on a continent. Each occurrence is provided with the scientific name, country or area, coordinates, year, basis of record, data set, and more. For downloading the data, the package @rGBIF can be used, but only with a free GBIF account. To avoid this, the data downloading is done and described in more detail in the other markdown [Downloading_data](Downloading_data.RMD). The data used in this markdown is therefore saved in the folder Data_ingredients [(combined_data)](../Data_ingredients/cleaned/combined_data.csv). First, the data for the seven selected genera (also saved in the mentioned folder) were downloaded individually and filtered by some quality markers (like removing absent records and removing data with high coordinate uncertainty). After this, the data got shortened to the only needed columns (scientific name, year, and country code). The rows with missing values in these columns were excluded. At the end, the seven data files got merged into one (combined_data) for easier handling in the follow-up.
+To get the needed data about the ingredients, the database "Global Biodiversity Information Facility" [(GBIF)](https://www.gbif.org/) is used as the basis for this project. GBIF was originally planned to be an international mechanism to make biodiversity data and information accessible worldwide. And then it was established in 2001 with the approval of the Organization for Economic Cooperation and Development (OECD). GBIF provides data on all types of life on earth and, for this project, especially important records on occurrences. These occurrence records are here used to identify the earliest appearance of a species on a continent. Each occurrence is provided with the scientific name, country or area, coordinates, year, basis of record, data set, and more. For downloading the data, the package [@rgbif] can be used, but only with a free GBIF account. To avoid this, the data downloading is done and described in more detail in the other markdown [Downloading_data](Downloading_data.RMD). The data used in this markdown is therefore saved in the folder Data_ingredients [(combined_data)](../Data_ingredients/cleaned/combined_data.csv). First, the data for the seven selected genera (also saved in the mentioned folder) were downloaded individually and filtered by some quality markers (like removing absent records and removing data with high coordinate uncertainty). After this, the data got shortened to the only needed columns (scientific name, year, and country code). The rows with missing values in these columns were excluded. At the end, the seven data files got merged into one (combined_data) for easier handling in the follow-up.
 
 ### Merging UNSD_M49.csv with combined_data.csv
 
@@ -213,7 +212,7 @@ source(here("R_functions", "plotting_EAC.R"))
 
 As there is now information available about the EAC of each genera, it all gets plotted on a world map. This map shows the earliest appearance of a ingredient from the GBIF Database on an continent.
 
-```{r}
+```{r, message=FALSE}
 # Loading world data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
@@ -240,7 +239,7 @@ for (species_name in species_of_interest) {
 
 Here the maps get animated with the package @gganimate.
 
-```{r}
+```{r, message=FALSE}
 # Loading function to animate the maps
  source(here("R_functions", "EAC_wm_animation.R"))
  
@@ -260,3 +259,5 @@ The underlying code presents, as a result, the spread of the seven chosen ingred
 # Discussion
 
 (Explain what the results mean in relation to the question stated in the Introduction. Discuss caveats, compare to earlier findings, and explain the relevance of your results.)
+
+# References
