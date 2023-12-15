@@ -65,6 +65,11 @@ create_species_map <- function(species_name) {
     labs(title = paste(species_name),
          subtitle = 'Year: {current_frame}')
   
+  # Calculate fps based on the total number of unique years
+  total_frames <- length(unique(species_result$earliest_year))
+  fps_factor <- if (total_frames > 0) 100 / total_frames else 1
+  
+  
   # Printing the map plot
   print(animated_map)
   
