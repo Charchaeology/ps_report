@@ -1,3 +1,4 @@
+# plotting_EAC.R
 # Creating an empty list to store plots for each species
 plot_list <- list()
 
@@ -33,7 +34,7 @@ for (species_name in species_of_interest) {
     theme_minimal()
   
   # Save the plot as a PNG file
-  ggsave(here("EAC_ingredients/timeline_plots/timeline_", gsub(" ", "_", species_name), ".png"), timeline_plot, width = 8, height = 6)
+  ggsave(here("EAC_ingredients", "timeline_plots", paste0(species_name, "_timeline.png")), timeline_plot, width = 8, height = 6)
   
   # Print the plot for the current species
   print(timeline_plot)

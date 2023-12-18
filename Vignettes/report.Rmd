@@ -30,6 +30,8 @@ library(transformr) # Version 0.1.3
 library(sf)
 library(here)
 library(maps)
+library(foreach)
+library(doParallel)
 ```
 
 This is the report for the semester project of the course ´Proseminar in
@@ -48,26 +50,33 @@ Europe or other parts of the world.
 
 So this project aims to answer the following research question: "How is the
 historical journey of some selected pizza ingredients over continents and
-time, and how can the results be presented in an appealing animation?"
+time, and how can the results be presented in an accessible animation?"
 
 Exploring the global history of the ingredients of a pizza helps us not
 only to enrich our understanding of the past but also to appreciate more
-the cultural diversity that has shaped our culinary experiences. The
-journey of food around the world isn't a new topic, as shown by the study
-Origins of Food Crops [@khoury2016], which connects countries worldwide. In
-association with this study, a
+the cultural diversity that has shaped our culinary experiences. Using the
+ingredients from pizza helps for an holistic understanding of our global
+food heritage and can give an insight on social, environmental, economic,
+cultural and historical aspects.
+
+The journey of food around the world isn't a new topic, as shown by the
+study Origins of Food Crops [@khoury2016], which stats that 68.7% of
+national food supplies as a global mean are derived from foreign crops and
+69.3% of crops grown are foreign. In association with this study, a
 [website](https://blog.ciat.cgiar.org/origin-of-crops/) has been created to
 show plotted data, for example, where food crops come from and where they
-are eaten now.
-
-(Background, Relevance, Motivation)
+are eaten now. Overall the study puts a spot on the the extensive
+connection among countrires and regions worldwide regarding origins of
+crops. This study motivates this project, to show these worldwide
+connections in an accessible way, more precisely an animation, with a
+different database.
 
 # Methods and Data
 
-As I said in the introduction, there are a lot of different ways to prepare
-a pizza. For this project, an easy-to-prepare dough is used from [Betty
-Bossi](https://www.bettybossi.ch/de/Home/Index), which is a cooking recipe
-provider. This
+As mentioned in the introduction, there are a lot of different ways to
+prepare a pizza. For this project, an easy-to-prepare dough is used from
+[Betty Bossi](https://www.bettybossi.ch/de/Home/Index), which is a famous
+swiss cooking recipe provider. This
 [recipe](https://www.bettybossi.ch/de/Rezept/ShowRezept/BB_ITKU120801_0243A-40-de)
 contains water, salt, flour (mostly wheat), yeast, and olive oil. Possible
 vegetarian topics include corn, tomatoes, onions, paprika, cheese, and
@@ -75,6 +84,9 @@ basil. For this project, only species (or scientific genera) are considered
 and no processed food. So the ingredients considered are: wheat (Triticum),
 olive (Olea europaea), corn (Zea mays), tomatoes (Solanum lycopersicum),
 onions (Allium cepa), paprika (Capsicum), and basil (Ocimum basilicum).
+Individually or in various combinations, those ingredients are often used
+for a pizza and therefore give the reader of this project a more direct
+access to the focus of this report.
 
 To get the needed data about the ingredients, the database "Global
 Biodiversity Information Facility" [(GBIF)](https://www.gbif.org/) is used
@@ -88,17 +100,37 @@ here used to identify the earliest appearance of a species on a continent.
 Each occurrence is provided with the scientific name, country or area,
 coordinates, year, basis of record, data set, and more. For downloading the
 data, the package [@rgbif] can be used, but only with a free GBIF account.
-To avoid this, the data downloading is done and described in more detail in
-the other markdown [Downloading_data](Downloading_data.RMD). The data used
-in this markdown is therefore saved in the folder Data_ingredients
-[(combined_data)](../Data_ingredients/cleaned/combined_data.csv). First,
-the data for the seven selected genera (also saved in the mentioned folder)
-were downloaded individually and filtered by some quality markers (like
-removing absent records and removing data with high coordinate
-uncertainty). After this, the data got shortened to the only needed columns
-(scientific name, year, and country code). The rows with missing values in
-these columns were excluded. At the end, the seven data files got merged
-into one (combined_data) for easier handling in the follow-up.
+That's why the downloading is done in a different markdown
+([Downloading_data](Downloading_data.RMD).Rmd). The following passage
+explains how this data was accessed.
+
+### Data Quality Assessment
+
+GBIF's commits to data standards like Darwin Core, EML (Ecological Metadata
+Language), and BioCASe/ABCD for a good [data
+standard](https://www.gbif.org/standards). However, to address potential
+issues, the following steps were taken:
+
+1.  **Individual Data Download:** Data for the seven selected genera were
+    downloaded individually from GBIF, ensuring a focused approach to each
+    ingredient.
+
+2.  **Quality Markers:** Quality markers were applied during the filtering
+    process, including the removal of absent records and data with high
+    coordinate uncertainty.
+
+3.  **Column Selection:** The data was shortened down to the essential
+    columns: scientific name, year, and country code.
+
+4.  **Exclusion of Missing Values:** Rows with missing values in critical
+    columns were excluded to enhance the reliability of the dataset.
+
+5.  **Merging**: All seven data files were merged into one
+    [(combined_data)](../Data_ingredients/cleaned/combined_data.csv), for
+    more forward handling in the following analyses.
+
+For more detailed information on data downloading, please refer to the
+[Downloading data](Downloading_data.RMD) markdown.
 
 ### Merging UNSD_M49.csv with combined_data.csv
 
@@ -111,121 +143,31 @@ defined region and subregion. As regions, Africa, Antarctica, the Americas,
 Asia, Europe, and Oceania are defined. There is no data provided in GBIF
 for Antarctica, so this is ignored, whereas the subregion is used for the
 Americas, so Latin America and the Caribbean (renamed South America) and
-Northern America (renamed North America).
+Northern America (renamed North America), to get a more detailed result.
 
 In the combined_data set, there are not only the genus but also the species
 and subspecies mentioned, e. g., for Triticum L. there are around 134
 different ones. For that reason, the scientificName column gets filtered
 for the words Triticum, Olea, Zea, Solanum, Allium, Capsicum and Ocimum.
-Those define them and are then altered to the scientific name,
-respectively, of their genus.
+Those define them and are then altered to the scientific name,respectively,
+of their genus.
 
 ```{r}
-combined_data <- read.csv(here("Data_ingredients", "cleaned", "combined_data.csv"))
-UNSD_M49 <- read.csv(here("Data", "UNSD_M49.csv"))
+# Loading read_data script
+  source(here("R_functions", "read_data.R"))
 
-# Remove rows with NA in countryCode
-combined_data_e <- combined_data[complete.cases(combined_data$countryCode), ]
+# Loading merge_data script
+  source(here("R_functions", "merge_data.R"))
 
-# Separate the UNSD_M49 data frame by semicolon
-UNSD_M49_split <- separate(data = UNSD_M49,
-                            col = "Region_Code.Region.Name.Sub.region.Code.Sub.region.Name.ISO_alpha2_Code",
-                            into = c("Region_Code", "Region_Name", "Subregion_Code", "Subregion_Name", "ISO_alpha2_Code"),
-                            sep = ";", fill = "right", convert = TRUE)
-
-
-# Find rows with missing values after separation
-problematic_rows <- apply(UNSD_M49_split, 1, function(row) any(is.na(row)))
-
-# Remove problematic rows from UNSD_M49_split
-UNSD_M49_c <- UNSD_M49[complete.cases(UNSD_M49), ]
-
-# Merging data frames
-merged_data <- merge(combined_data_e, UNSD_M49_split, by.x = "countryCode", by.y = "ISO_alpha2_Code", all.x = TRUE)
-
-# Check if "americas" is present in Region_Name, if true, use Subregion_Name
-merged_data$Region_Name <- ifelse(merged_data$Region_Name == "Americas", merged_data$Subregion_Name, merged_data$Region_Name)
-
-# Remove Subregion_Name column if it's no longer needed
-merged_data <- merged_data[, !(names(merged_data) %in% c("Subregion_Name"))]
-
-# Changing the UN Definition Names
-merged_data$Region_Name <- ifelse(merged_data$Region_Name == "Latin America and the Caribbean", "South America", merged_data$Region_Name)
-
-merged_data$Region_Name <- ifelse(merged_data$Region_Name == "Northern America", "North America", merged_data$Region_Name)
-
-# Keeping only the needed columns
-merged_data <- merged_data[, c("countryCode", "X", "scientificName", "year", "Region_Name")]
-
-# Extracting species names (remove anything after the space)
-merged_data$speciesName <- gsub(" .*", "", merged_data$scientificName)
-
-# Filtering based on species of interest
-species_sup <- c("Triticum", "Olea", "Zea", "Solanum", "Allium", "Capsicum", "Ocimum")
-
-
-# Remove rows with NA or are blank in Region_Name
-filtered_data <- merged_data %>%
-  filter(!is.na(Region_Name) & Region_Name != "") %>%
-  filter(speciesName %in% species_sup)
-
-# Adding the mapping of species names to scientific names
-species_mapping <- c("Triticum" = "Triticum L.",
-                      "Olea" = "Olea europaea L.",
-                      "Zea" = "Zea mays L.",
-                      "Solanum" = "Solanum lycopersicum L.",
-                      "Allium" = "Allium cepa L.",
-                      "Capsicum" = "Capsicum L.",
-                      "Ocimum" = "Ocimum basilicum L.")
-
-# Replacing speciesName with scientific names based on the mapping
-filtered_data$speciesName <- species_mapping[filtered_data$speciesName]
-
-
-# Save merged_data to the "Data" folder
-write.csv(merged_data, here("Data", "merged_data.csv"), row.names = FALSE)
-
-# Save filtered_data to the "Data" folder
-write.csv(filtered_data, here("Data", "filtered_data.csv"), row.names = FALSE)
-
-
+# Loading filter_saved_data script
+  source(here("R_functions", "filter_saved_data.R"))
 ```
 
 ### Better understanding the data
 
 ```{r}
-# Scientific Names of the seven ingredients
-species_of_interest <- c("Triticum L.", "Olea europaea L.", "Zea mays L.", "Solanum lycopersicum L.", "Allium cepa L.", "Capsicum L.", "Ocimum basilicum L.")
-
-# Filtering the data for species_of_interest and calculate the counts
-filtered_data1 <- filtered_data %>%
-  filter(speciesName %in% species_of_interest) %>%
-  group_by(speciesName) %>%
-  summarise(count = n())
-
-# Setting the plot width
-options(repr.plot.width = 10) 
-
-# Arranging the data by count in descending order
-filtered_data1 <- filtered_data1 %>% 
-  arrange(desc(count))
-
-# Creating the plot
-sample_number <- ggplot(filtered_data1, aes(x = reorder(speciesName, -count), y = count)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
-  geom_text(aes(label = count), vjust = -0.5, color = "black") +
-  labs(title = "Number of Samples per Genus",
-       x = "Species",
-       y = "Number of Samples") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.margin = margin(b = 50)) 
-
-
-# Printing the plot
- print(sample_number)
- 
-# Saving the plot
- ggsave(here("Data", "data_analysis", "samples_genus.png"), sample_number, width = 8, height = 6)
+# Loading sample_size_genus.R
+  source(here("R_functions", "sample_size_genus.R"))
 ```
 
 ```{r}
@@ -253,8 +195,8 @@ sample_number <- ggplot(filtered_data1, aes(x = reorder(speciesName, -count), y 
 ### Filtering Data
 
 ```{r}
-# Filtering merged_data for samples per continent
-samples_per_continent <- filtered_data %>%
+ # Filtering merged_data for samples per continent
+ samples_per_continent <- filtered_data %>%
      group_by(Region_Name) %>%
      summarise(Number_of_Samples = n())
  
@@ -262,18 +204,21 @@ samples_per_continent <- filtered_data %>%
  print(samples_per_continent)
 
  # Saving the result
-  ggsave(here("Data", "data_analyse", "samples_continent.csv", plot = samples_per_continent))
+ write.csv(samples_per_continent, file = here("Data", "data_analysis", "samples_continent.csv"), row.names = FALSE)
+
 ```
 
 #### Earliest appearance per continent (EAC)
 
 Here, the new combined and then filtered data set (filtered_data.csv), is
-filtered for the earliest appearance of each species per continent.
+filtered to compare the occurrence patterns of the selected ingredients
+across the continents. The EAC allows pinpointing when and where a genus
+appeared on a continent, and so also gives us a glimpse into historical
+patterns of trade, migration and cultural exchange.
 
 ```{r}
 # Loading filtering_EAC function
-source(here("R_functions", "filtering_EAC.R"))
-
+  source(here("R_functions", "filtering_EAC.R"))
 ```
 
 #### Plotting the EAC
@@ -284,21 +229,17 @@ plotted in a timeline.
 
 ```{r}
 # Loading the function to plot the EAC on a timeline
-source(here("R_functions", "plotting_EAC.R"))
-
+  source(here("R_functions", "plotting_EAC.R"))
 ```
 
 ### Plotting the Data on a Map and animating it
 
 As there is now information available about the EAC of each genera, it all
 gets plotted on a world map. This map shows the earliest appearance of a
-ingredient from the GBIF Database on an continent. And I animated with the
-package @gganimate.
+ingredient from the GBIF Database on an continent. Those are animated with
+the package @gganimate and saved in the path EAC_ingredients/maps/.
 
 ```{r}
-# Loading function to animate the maps
-# source(here("R_functions", "EAC_wm_animation.R"))
-
 # Loading world data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
@@ -309,159 +250,127 @@ world <- world %>%
     TRUE ~ "Other"
   ))
 
-# Function to animate the EAC on the world map
-create_species_map <- function(species_name) {
-  
-  # Reading the corresponding EAC CSV file
-  species_result <- read.csv(here("EAC_ingredients", "EAC", paste0(gsub(" ", "_", species_name), "_EAC.csv")))
-  
-  
-  # Ordering the data frame by EarliestAppearance in ascending order
-  species_result <- species_result %>% arrange(earliest_year)
-  
-  # Getting the order of continents based on the first appearance year
-  continent_order <- species_result %>%
-    group_by(continent) %>%
-    summarize(first_appearance = min(earliest_year)) %>%
-    arrange(first_appearance) %>%
-    pull(continent)
-  
-  # Defining custom order for y-axis
-  custom_order <- continent_order
-  
-  # Creating a factor variable for Continent with the custom order
-  species_result$continent <- factor(species_result$continent, levels = custom_order)
-  
-  # Merging species_result data frame with continent boundaries
-  merged_data <- merge(world, species_result, by.x = "continent", by.y = "continent")
-  
-  # Creating the map
-  map_plot  <-  ggplot() +
-    borders("world", colour = "gray85", fill = "gray80") +
-    geom_sf(data = merged_data,aes(fill = earliest_year)) +
-    scale_fill_viridis_c() +
-    labs(title = paste(species_name),
-         fill = "Year of First \nAppearance") +
-    theme_minimal() +
-    theme(plot.background = element_rect(fill = "white"),
-          legend.background=element_blank(),
-          axis.title=element_blank(),
-          legend.key.size = unit(0.6, 'cm'),
-          legend.title=element_text(size=9), 
-          legend.text=element_text(size=8)) +
-    coord_sf(label_axes = "both")
-  
-  # Printing the map plot
-  print(map_plot)
-  
-  # Creating a folder for each species
-  species_folder <- here("EAC_ingredients", "maps", gsub(" ", "_", gsub("\\.", "", species_name)), "/")
-  dir.create(species_folder, showWarnings = FALSE)
-  
-  # Saving the map plot
-  ggsave(paste0(species_folder, "earliest_appearance.png"), plot = map_plot, width = 8, height = 6)
- 
+# Loading function to animate the maps
+source(here("R_functions", "EAC_wm_animation.R"))
 
-# Animating the map using gganimate
-animated_map <- map_plot +
-  transition_states(states = earliest_year, transition_length = 2, state_length = 1) +
-  labs(title = paste(species_name),
-       subtitle = 'Year: {closest_state}')
-
-# Printing the animated map
-print(animated_map)
-
-# Creating a filename for the animated map
-animated_map_filename <- here(species_folder, "animated_map.gif")
-
-# Saving the animated map directly
-tryCatch({
-  anim_save(animated_map_filename, animation = animated_map)
-}, error = function(e) {
-  cat("Error saving animated map:", e$message, "\n")
-})
-
-
-  
-}
- 
-# Looping over species names and create map plots
+# Looping over species names and create animated map
 lapply(species_of_interest, function(species_name) {
   cat("Processing species:", species_name, "\n")
-  create_species_map(species_name)
+  
+  # Measure the time for each iteration
+  timing <- system.time({
+    create_species_map(species_name)
+  })
+  
+  cat("Elapsed time:", timing[3], "seconds\n\n")
 })
+
 ```
 
 # Results
 
-The underlying code presents, as a result, the spread of the seven chosen
-ingredients per continent and time on an animated world map. So the map
-shows from the seven chosen ingredients: wheat, olive, corn, tomatoes,
-onions, paprika and basil, when their first occurrence on a continent is
-recorded and saved in GBIF. The animation shows in an simple way this
-journey and also show, that there is a difference on when an ingredient
-appeared on a continent. As there are the same plots and maps used for each
-ingredient, the results are here mainly shown with the example Triticum L.
+#### **Animation**
 
-Let's first have a look on the animated world map:![Animated Map Triticum
-L.](images/animated_map.gif)
+The project code presents the spread of the seven selected ingredients
+(wheat, olive, corn, tomatoes, onions, paprika and basil) across continents
+and over time. Notably, the first appearance date represents registered
+occurrences in the GBIF database and may not reflect the actual historical
+introduction of ingredients.
 
-Here we see, that the first occurence is in Europe, then Asia, Africa,
-South America, Oceania and at last North America. Also the first occurence
-year is shown, but for easier acces is this data also provided in a
-dataframe in the filtering EAC chunk. The plotted timeline shows the
-correlation between year and continent.
+#### **Example Triticum L.** ![Animated Map EAC Triticum L.](images/Triticum_L._animated.gif)
 
-![Timeline Triticum L.](images/timeline_Triticum_L..png)
+This animation shows as the first occurrence Europe, then Asia, Africa,
+South America, Oceania and at last North America. Also the first occurrence
+year per continent is shown, but for easier acces is this data also
+provided in a dataframe in the filtering EAC chunk.
 
-But to get to this animation and this plot it's also very important to
-understand the data I'm working with. As the feasibility example has
-already shown, there is an issue with the data from GBIF. Although GBIF has
-data from 1000 to 2023, that doesn't mean there is data provided for each
-species during this time period. Also, the availability of data on GBIF
-depends a lot on the scientific stand, whether data is provided to GBIF and
-whether it meets the [standards of
-GBIF](https://www.gbif.org/what-is-gbif#:~:text=This%20knowledge%20derives%20from%20many,in%20recent%20days%20and%20weeks).
-So the first appearance date only represents the first appearance that is
-registered in the GBIF database. To get a better insight on that data
-issue, the chosen data has been analysed. Through this analysis it can be
-seen, that the presence of data differs strongly between genera, continent
-and time, for the data of the seven chosen ingredients. For example for
-'Olea europaea L.' about 223'000 occurrences were processed, where as
-'Ocimum basilicum L.' only has about 2'400 different occurrences. The same
-problems occurs between the continents so Europe has around 332'000 samples
-and North America only around 9'400.
+The plotted timeline shows the correlation between year and continent.
 
-![Samples per Genus](images/samples_genus.png)
+![Timeline of the EAC of Triticum L. - Plot showing the chronological
+distribution of the earliest appearance of wheat, whit the x-axis
+indication the years and the y-axis representing the continents, based on
+the GBIF data. The timeline shows the distribution from Europe to Asia,
+Africa, South America, North America and then
+Oceania.](images/timeline_Triticum_L..png)
 
-And the biggest data issue for this specific project is the sample size by
-year and species. As the majority of data is provided for approximately the
-years 1850 to nowadays. In this time periode there are up to 30'000 samples
-per year and genus provided. The first date in the used data is in 1500 in
-Europe for 'Triticum L.' and 'Olea europaea L.'
+#### **Data Challenges**
 
-![Samples per Year and Genus](images/samples_year_genus.png)
+The availability of Data on GBIF varies significantly over the timespan
+from 1500 to 2023, the continent and over genera. For example for 'Olea
+europaea L.' about 223'000 occurrences were processed, where as 'Ocimum
+basilicum L.' only has about 2'400 different occurrences. The same problems
+occurs between the continents so Europe has around 332'000 samples and
+North America only around 9'400.
 
-The resulted data stats that the first occurrences were for all ingredients
-in Europe "Triticum L.","Europe",1500 Zea mays L.","Europe",1785 "Capsicum
-L.","Europe",1771 "Allium cepa L.","Europe",1574 "Olea europaea
-L.","Europe",1500 "Solanum lycopersicum L.","Europe",1737
+![Number of Occurrence Records - The seven selected genera are on this bar
+chart displayed by their distribution of occurrence records over all
+continents, based on the data from GBIF. Olea europaea is dominating,
+before Triticum and Zea mays.](images/samples_genus.png)
 
-Vgl. Khoury Tomatoes: Andes (south america) Maize: Central America and
-Mexico (north America) Papric not data onion: west asia, central asia
-olive: East africa, southwestern europe, south and east mediterranean
-(africa), west asia, southern europe, wheat: central asia, west asia, south
-and est meditteranean (africa)
+As The majority of data is provided for approximately the years 1850 to
+nowadays. In this time periode there are up to 30'000 samples per year and
+genus provided. The first date in the used data is in 1500 in Europe for
+'Triticum L.' and 'Olea europaea L.'
 
-(Reports the results in a logical order that facilitates reading - from the
-general pattern to the details. Basic and central finding first, then the
-nuance.)
+![Dot plot showing Samples per Year and Genus - In this plot the sample
+sizes for each selected ingredient is illustrated by years and genera with
+data from the GBIF database. Each dot represents the count of occurrences
+in a specific year, with the dot size indicating the sample size for a
+particular genus.](images/samples_year_genus.png)
+
+#### **Evaluation of EAC**
+
+The evaluated EAC state the the first occurrences are for all seven
+ingredients in Europe, although with different appearing years. Here the
+data issue is clearly visible. A comparison with Khoury's (2016) study
+reveals broader variability in the primary regions of diversity for each
+ingredient.
+
+Comparison:
+
+-   Tomatoes: Andes
+
+-   Corn: Central America and Mexico
+
+-   Onion: West Asia, Central Asia
+
+-   Olive: East Africa, Southwestern Europe, South and East Mediterranean,
+    West Asia, Southern Europe,
+
+-   Wheat: Central Asia, West Asia, South and East Mediterranean
+
+No data was available for Paprika and Basil.
+
+#### **Summary**
+
+The findings emphasize the importance of understanding data limitations and
+discrepancies when interpreting the historical journey of pizza
+ingredients.
 
 # Discussion
 
-(Explain what the results mean in relation to the question stated in the
-Introduction. Discuss caveats, compare to earlier findings, and explain the
-relevance of your results.)\
-Aussicht: könntes für die einzelnen Länder machen, bessere Daten Grundlage
+The journey around the world of wheat, olives, corn, tomatoes, onions,
+paprika and basil is analysed regarding the historical occurrences. And the
+results are presented in visual formats, including animated maps and
+timelines. Though some caveats are needed to be considered. So e. g. the
+data limitation and data source reliability (adressed in the sections [Data
+Quality Assessment] and [Data Challenges]). Furthermore, historical records
+propose a challenge as they could be incomplete or can depend on the
+research status.
+
+This projects relevance is given through having a accessible visualization
+generated. Giving a small incentive to discuss about food, culture and
+global connections. Additionally it shows future directions.
+
+#### **Future Directions**
+
+An other database with more extensive data could be used. For example data
+from the Food and Agriculture Organization of the United Nation could be
+checked. Exploring occurrences at the country level is a valuable and
+insightful future direction. Mapping and animating the earliest appearances
+of pizza ingredients per country would provide a more detailed
+understanding of their historical journey. With an extended version of this
+project could the findings be compared with with historical events,
+cultural exchanges, or trade routes.
 
 # References

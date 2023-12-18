@@ -1,4 +1,4 @@
-# Filtering for earliest apperance of Species per continent
+# filtering_EAC.R
 
 # Creating an empty list to store results for each species
 result_list <- list()
