@@ -15,7 +15,6 @@ bibliography: references.bib
 
 ```{r load_packages, echo=FALSE, message=FALSE, warning=FALSE}
 # Loading packages
-library(rgbif)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
@@ -30,8 +29,6 @@ library(transformr) # Version 0.1.3
 library(sf)
 library(here)
 library(maps)
-library(foreach)
-library(doParallel)
 ```
 
 This is the report for the semester project of the course ´Proseminar in
