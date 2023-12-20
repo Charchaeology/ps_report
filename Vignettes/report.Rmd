@@ -229,7 +229,16 @@ of their genus.
  print(records_per_continent)
 
 # Saving the result
+<<<<<<< HEAD
  write.csv(records_per_continent, file = here("Data", "data_analysis", "records_continent.csv"), row.names = FALSE)
+=======
+<<<<<<< HEAD
+ write.csv(records_per_continent, file = here("Data", "data_analysis", "records_continent.csv"), row.names = FALSE)
+=======
+ write.csv(samples_per_continent, file = here("Data", "data_analysis", "samples_continent.csv"), row.names = FALSE)
+>>>>>>> 4cc24a5d5aa9c1e9b822480882a82fcb45aef282
+
+>>>>>>> b9e18c87c66a11503d1f9ea3488c91773b7dc704
 ```
 
 #### Earliest appearance per continent (EAC)
