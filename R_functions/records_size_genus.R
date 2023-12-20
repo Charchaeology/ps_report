@@ -20,9 +20,9 @@ filtered_data1 <- filtered_data1 %>%
 sample_number <- ggplot(filtered_data1, aes(x = reorder(speciesName, -count), y = count)) +
   geom_bar(stat = "identity", fill = "skyblue", color = "black") +
   geom_text(aes(label = count), vjust = -0.5, color = "black") +
-  labs(title = "Number of Samples per Genus",
-       x = "Species",
-       y = "Number of Samples") +
+  labs(title = "Number of Occurrence Records per Genus",
+       x = "Genus",
+       y = "Number of Records") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.margin = margin(b = 50)) 
 
@@ -31,4 +31,4 @@ sample_number <- ggplot(filtered_data1, aes(x = reorder(speciesName, -count), y 
 print(sample_number)
 
 # Saving the plot
-ggsave(here("Data", "data_analysis", "samples_genus.png"), sample_number, width = 8, height = 6)
+ggsave(here("Data", "data_analysis", "records_genus.png"), sample_number, width = 8, height = 6)

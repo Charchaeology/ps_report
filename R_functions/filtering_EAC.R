@@ -3,24 +3,24 @@
 # Creating an empty list to store results for each species
 result_list <- list()
 
-# Function for filering for EAC
+# Function for filtering for EAC
 for (species in species_of_interest) {
   
-  # Filter data for the current species
+  # Filtering data for the current species
   species_data <- filtered_data[filtered_data$speciesName == species, ]
   
-  # Create an empty data frame to store results for each continent
+  # Creating an empty data frame to store results for each continent
   species_results <- data.frame()
   
-  # Loop over each continent
+  # Looping over each continent
   for (continent in unique(species_data$Region_Name)) {
-    # Filter data for the current continent
+    # Filtering data for the current continent
     continent_data <- species_data[species_data$Region_Name == continent, ]
     
-    # Find the earliest appearance year
+    # Finding the earliest appearance year
     earliest_year <- min(continent_data$year, na.rm = TRUE)
     
-    # Create a data frame with species, continent, and earliest year
+    # Creating a data frame with species, continent, and earliest year
     continent_result <- data.frame(
       species = species,
       continent = continent,
@@ -44,7 +44,7 @@ for (species in species_of_interest) {
   
   write.csv(species_results, file = file.path(dir_path, file_name), row.names = FALSE)
   
-  # Print results for the current species
+  # Printing results for the current species
   print(species_results)
 }
 

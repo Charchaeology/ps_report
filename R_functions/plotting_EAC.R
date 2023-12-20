@@ -33,9 +33,9 @@ for (species_name in species_of_interest) {
     labs(title = paste("Timeline of Earliest Appearance of", species_name), x = "Year", y = "Continent") +
     theme_minimal()
   
-  # Save the plot as a PNG file
+  # Saving the plot as a PNG file
   ggsave(here("EAC_ingredients", "timeline_plots", paste0(species_name, "_timeline.png")), timeline_plot, width = 8, height = 6)
   
-  # Print the plot for the current species
+  # Printing the plot for the current species
   print(timeline_plot)
 }

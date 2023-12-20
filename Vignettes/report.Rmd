@@ -13,6 +13,37 @@ editor_options:
 bibliography: references.bib
 ---
 
+```{r package version, echo=FALSE, warning=FALSE}
+# Checking if gganimate and transform is installed and has the correct version
+if (!requireNamespace("gganimate", quietly = TRUE)) {
+  install.packages("gganimate", dependencies = TRUE)
+}
+
+if (!requireNamespace("transformr", quietly = TRUE)) {
+  install.packages("transformr", dependencies = TRUE)
+}
+
+tryCatch({
+  # Loading gganimate and checking version
+  library(gganimate)
+  
+  # Checking if the loaded version of gganimate is exactly 1.0.7
+  if (packageVersion("gganimate") != "1.0.7") {
+    stop("gganimate version 1.0.7 is required. Please install this specific version.")
+  }
+  
+  # Loading transformr and checking version
+  library(transformr)
+  
+  # Checking if the loaded version of transformr is exactly 0.1.3
+  if (packageVersion("transformr") != "0.1.3") {
+    stop("transformr version 0.1.3 is required. Please install this specific version.")
+  }
+}, error = function(e) {
+  cat("Error:", conditionMessage(e), "\n")
+})
+```
+
 ```{r load_packages, echo=FALSE, message=FALSE, warning=FALSE}
 # Loading packages
 library(dplyr)
@@ -24,11 +55,10 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(RColorBrewer)
 library(magick)
-library(gganimate) # Version 1.0.7
-library(transformr) # Version 0.1.3
 library(sf)
 library(here)
 library(maps)
+library(viridis)
 ```
 
 This is the report for the semester project of the course ´Proseminar in
@@ -46,8 +76,8 @@ coming from all over the world, and those have not always been local to
 Europe or other parts of the world.
 
 So this project aims to answer the following research question: "How is the
-historical journey of some selected pizza ingredients over continents and
-time, and how can the results be presented in an accessible animation?"
+historical journey of pizza ingredients over continents and time, and how
+can this be presented in an accessible animation?"
 
 Exploring the global history of the ingredients of a pizza helps us not
 only to enrich our understanding of the past but also to appreciate more
@@ -63,7 +93,7 @@ national food supplies as a global mean are derived from foreign crops and
 [website](https://blog.ciat.cgiar.org/origin-of-crops/) has been created to
 show plotted data, for example, where food crops come from and where they
 are eaten now. Overall the study puts a spot on the the extensive
-connection among countrires and regions worldwide regarding origins of
+connection among countries and regions worldwide regarding origins of
 crops. This study motivates this project, to show these worldwide
 connections in an accessible way, more precisely an animation, with a
 different database.
@@ -78,12 +108,12 @@ swiss cooking recipe provider. This
 contains water, salt, flour (mostly wheat), yeast, and olive oil. Possible
 vegetarian topics include corn, tomatoes, onions, paprika, cheese, and
 basil. For this project, only species (or scientific genera) are considered
-and no processed food. So the ingredients considered are: wheat (Triticum),
-olive (Olea europaea), corn (Zea mays), tomatoes (Solanum lycopersicum),
-onions (Allium cepa), paprika (Capsicum), and basil (Ocimum basilicum).
-Individually or in various combinations, those ingredients are often used
-for a pizza and therefore give the reader of this project a more direct
-access to the focus of this report.
+and no processed food. So the ingredients considered are: wheat (Triticum
+L.), olive (Olea europaea L.), corn (Zea mays L.), tomatoes (Solanum
+lycopersicum L.), onions (Allium cepa L.), paprika (Capsicum L.), and basil
+(Ocimum basilicum L.). Individually or in various combinations, those
+ingredients are often used for a pizza and therefore give the reader of
+this project a more direct access to the focus of this report.
 
 To get the needed data about the ingredients, the database "Global
 Biodiversity Information Facility" [(GBIF)](https://www.gbif.org/) is used
@@ -93,7 +123,7 @@ accessible worldwide. And then it was established in 2001 with the approval
 of the Organization for Economic Cooperation and Development (OECD). GBIF
 provides data on all types of life on earth and, for this project,
 especially important records on occurrences. These occurrence records are
-here used to identify the earliest appearance of a species on a continent.
+here used to identify the earliest appearance of a genera on a continent.
 Each occurrence is provided with the scientific name, country or area,
 coordinates, year, basis of record, data set, and more. For downloading the
 data, the package [@rgbif] can be used, but only with a free GBIF account.
@@ -160,11 +190,11 @@ of their genus.
   source(here("R_functions", "filter_saved_data.R"))
 ```
 
-### Better understanding the data
+### Better understanding of the data
 
 ```{r}
 # Loading sample_size_genus.R
-  source(here("R_functions", "sample_size_genus.R"))
+  source(here("R_functions", "records_size_genus.R"))
 ```
 
 ```{r}
@@ -176,32 +206,30 @@ of their genus.
 # Plotting a dot plot
  dot_plot <- ggplot(count_data, aes(x = year, y = speciesName, size = count)) +
      geom_point(color = "skyblue") +
-     labs(title = "Dot Plot: Sample Size by Year and Genus",
+     labs(title = "Records Size by Year and Genus",
           x = "Year",
           y = "Genus",
-          size = "Sample Size") +
+          size = "Records Size") +
      theme_minimal()
  
 # Printing the plot
  print(dot_plot)
 
 # Saving the plot
- ggsave(here("Data", "data_analysis", "samples_year_genus.png"), dot_plot, width = 8, height = 6)
+ ggsave(here("Data", "data_analysis", "records_year_genus.png"), dot_plot, width = 8, height = 6)
 ```
 
-### Filtering Data
-
 ```{r}
- # Filtering merged_data for samples per continent
- samples_per_continent <- filtered_data %>%
+# Filtering merged_data for records per continent
+ records_per_continent <- filtered_data %>%
      group_by(Region_Name) %>%
-     summarise(Number_of_Samples = n())
+     summarise(Number_of_Records = n())
  
- # Printing the result
- print(samples_per_continent)
+# Printing the result
+ print(records_per_continent)
 
- # Saving the result
- write.csv(samples_per_continent, file = here("Data", "data_analysis", "samples_continent.csv"), row.names = FALSE)
+# Saving the result
+ write.csv(records_per_continent, file = here("Data", "data_analysis", "records_continent.csv"), row.names = FALSE)
 
 ```
 
@@ -210,8 +238,7 @@ of their genus.
 Here, the new combined and then filtered data set (filtered_data.csv), is
 filtered to compare the occurrence patterns of the selected ingredients
 across the continents. The EAC allows pinpointing when and where a genus
-appeared on a continent, and so also gives us a glimpse into historical
-patterns of trade, migration and cultural exchange.
+appeared on a continent.
 
 ```{r}
 # Loading filtering_EAC function
@@ -266,108 +293,146 @@ lapply(species_of_interest, function(species_name) {
 
 # Results
 
-#### **Animation**
-
 The project code presents the spread of the seven selected ingredients
 (wheat, olive, corn, tomatoes, onions, paprika and basil) across continents
-and over time. Notably, the first appearance date represents registered
-occurrences in the GBIF database and may not reflect the actual historical
-introduction of ingredients.
+and over time.
 
-#### **Example Triticum L.** ![Animated Map EAC Triticum L.](images/Triticum_L._animated.gif)
+#### **Example Triticum L.**
 
-This animation shows as the first occurrence Europe, then Asia, Africa,
-South America, Oceania and at last North America. Also the first occurrence
-year per continent is shown, but for easier acces is this data also
-provided in a dataframe in the filtering EAC chunk.
+For each genera a timeline plot is generated as well as an animation
+showing the journey around the world. In principle, all plots and
+animations work the same, only differing in the underlying data. Wheat is
+here chosen as an example.
 
-The plotted timeline shows the correlation between year and continent.
+The generated timeline shows the chronological distribution of the earliest
+appearance of wheat, with the x-axis indicating the years and the y-axis
+representing the continents, based on the GBIF data. The timeline shows the
+distribution from Europe to Asia, Africa, South America, North America, and
+then Oceania.
 
-![Timeline of the EAC of Triticum L. - Plot showing the chronological
-distribution of the earliest appearance of wheat, whit the x-axis
-indication the years and the y-axis representing the continents, based on
-the GBIF data. The timeline shows the distribution from Europe to Asia,
-Africa, South America, North America and then
-Oceania.](images/timeline_Triticum_L..png)
+![](images/timeline_Triticum_L..png)
+
+The same distribution pattern can be seen likewise in the animation. The
+animation shows as well the first occurrence in Europe, then Asia, Africa,
+South America, Oceania, and, at last, North America. Here, the exact year
+of the first occurrence on a continent is shown. But this is not the only
+thing that is different in comparison to the timeline plot. Plotting the
+results on the world map and animating it gives more accessible access to
+data, as they are visible and don't need to be interpreted from a
+plot.![Animated Map EAC Triticum
+L.](images/Triticum_L._animated.gif){width="508"}
 
 #### **Data Challenges**
 
-The availability of Data on GBIF varies significantly over the timespan
-from 1500 to 2023, the continent and over genera. For example for 'Olea
-europaea L.' about 223'000 occurrences were processed, where as 'Ocimum
-basilicum L.' only has about 2'400 different occurrences. The same problems
-occurs between the continents so Europe has around 332'000 samples and
-North America only around 9'400.
+The availability of data on GBIF varies significantly over the timespan
+from 1500 to 2023, across continents, and over genera. When the records are
+filtered by continents, a discrepancy is visible. Europe has around 332'000
+records, and North America only has around 9'400. What could speak for a
+research gap or problems in data consideration? The different volumes was
+also highlighted in the report of the task group on 'GBIF Data Fitness for
+Use in Distribution Modelling' [@anderson2015].
 
-![Number of Occurrence Records - The seven selected genera are on this bar
-chart displayed by their distribution of occurrence records over all
-continents, based on the data from GBIF. Olea europaea is dominating,
-before Triticum and Zea mays.](images/samples_genus.png)
+The plot 'Number of Samples per Genus' as well shows this variation in
+availability. The plot displays the seven selected genera on a bar chart
+displayed by their distribution of occurrence records over all continents.
+Based on the data from GBIF, 'Olea europaea L.' is dominating, before
+'Triticum L.' and 'Zea mays L.'. As an example, from 'Olea europaea L.'
+about 223'000 records were processed, whereas from 'Ocimum basilicum L.'
+only about 2'400 different records
 
-As The majority of data is provided for approximately the years 1850 to
-nowadays. In this time periode there are up to 30'000 samples per year and
-genus provided. The first date in the used data is in 1500 in Europe for
-'Triticum L.' and 'Olea europaea L.'
+![](images/samples_genus-02.png)
 
-![Dot plot showing Samples per Year and Genus - In this plot the sample
-sizes for each selected ingredient is illustrated by years and genera with
-data from the GBIF database. Each dot represents the count of occurrences
-in a specific year, with the dot size indicating the sample size for a
-particular genus.](images/samples_year_genus.png)
+The timespan also shows some data challenges. In the plot 'Records Size by
+Year and Genus', the record sizes for all selected ingredients are
+illustrated by years and genera with data from the GBIF database. Each dot
+represents the count of occurrences in a specific year, with the dot size
+indicating the sample size for a particular genus. The majority of the data
+is provided for approximately the years 1850 to nowadays. In this time
+period, there are up to 30'000 records per year and genus provided. The
+first year appearing in the downloaded data is 1500 in Europe for 'Triticum
+L.' and 'Olea europaea L.'
 
-#### **Evaluation of EAC**
+![](images/samples_year_genus-02.png)
 
-The evaluated EAC state the the first occurrences are for all seven
-ingredients in Europe, although with different appearing years. Here the
-data issue is clearly visible. A comparison with Khoury's (2016) study
-reveals broader variability in the primary regions of diversity for each
-ingredient.
+#### **Evaluation of the EAC**
 
-Comparison:
+The evaluated EAC states that the first occurrences for all seven
+ingredients are in Europe, although with different appearing years. In more
+detail, it shows the following journeys:
 
--   Tomatoes: Andes
+-   Wheat: Europe (1500), *Asia*, *Africa*, South America, Oceania, North
+    America
 
--   Corn: Central America and Mexico
+-   Olive: *Europe* (1500), Oceania, *Africa*, *Asia*, South America, North
+    America
 
--   Onion: West Asia, Central Asia
+-   Corn: Europe (1785), *North America, South America*, Asia, Africa,
+    Oceania
 
--   Olive: East Africa, Southwestern Europe, South and East Mediterranean,
-    West Asia, Southern Europe,
+-   Tomato: Europe (1737), *South America*, Asia, Africa, North America,
+    Oceania
+
+-   Onion: Europe (1574), Africa, North America, South America, *Asia*,
+    Oceania
+
+-   Paprika: Europe (1771), South America, Asia, Africa, North America,
+    Oceania
+
+-   Basil: Europe (1785), North America, Africa, South America, Asia,
+    Oceania
+
+A comparison with Khoury's (2016) study reveals broader variability in the
+primary regions of diversity for each ingredient. All the continents
+mentioned in the study as primary regions of diversity are written in
+italics in the list above.
+
+Origins, according to Khoury (no data was available for paprika and basil):
 
 -   Wheat: Central Asia, West Asia, South and East Mediterranean
 
-No data was available for Paprika and Basil.
+-   Olive: East Africa, Southwestern Europe, South and East Mediterranean,
+    West Asia, Southern Europe
+
+-   Corn: Central America and Mexico
+
+-   Tomatoes: Andes
+
+-   Onion: West Asia, Central Asia
 
 #### **Summary**
 
 The findings emphasize the importance of understanding data limitations and
-discrepancies when interpreting the historical journey of pizza
-ingredients.
+discrepancies when interpreting the historical journey of the chosen
+ingredients. Notably, the first appearance date may represents registered
+occurrences in the GBIF database and not reflect the actual historical
+introduction of ingredients.
 
 # Discussion
 
 The journey around the world of wheat, olives, corn, tomatoes, onions,
-paprika and basil is analysed regarding the historical occurrences. And the
+paprika, and basil is analyzed regarding historical occurrences. And the
 results are presented in visual formats, including animated maps and
-timelines. Though some caveats are needed to be considered. So e. g. the
-data limitation and data source reliability (adressed in the sections [Data
-Quality Assessment] and [Data Challenges]). Furthermore, historical records
-propose a challenge as they could be incomplete or can depend on the
-research status.
+timelines. The results also show the connection between the continents,
+which further promotes the need to address food challenges and
+opportunities.
 
-This projects relevance is given through having a accessible visualization
-generated. Giving a small incentive to discuss about food, culture and
-global connections. Additionally it shows future directions.
+Though some caveats are needed to be considered, e.g., the data limitation
+and data source reliability (adressed in the sections [Data Quality
+Assessment] and [Data Challenges]). Furthermore, historical records pose a
+challenge as they could be incomplete or depend on the research status.
 
-#### **Future Directions**
-
-An other database with more extensive data could be used. For example data
-from the Food and Agriculture Organization of the United Nation could be
-checked. Exploring occurrences at the country level is a valuable and
+This project's relevance is given by the accessible visualization
+generated. Giving an incentive to discuss food, cultural, and global
+connections. Additionally, it shows future directions in the same area as
+this project. Another database with more extensive data could be used. Or
+if there is no better database available, the data from GBIF could be
+extended with self-gathered data, e.g., from archaeological investigations.
+Also, exploring occurrences at the country level could be a valuable and
 insightful future direction. Mapping and animating the earliest appearances
 of pizza ingredients per country would provide a more detailed
-understanding of their historical journey. With an extended version of this
-project could the findings be compared with with historical events,
-cultural exchanges, or trade routes.
+understanding of their historical journey. Additionally, with an extended
+version of this project, findings could be compared with historical events,
+cultural exchanges, or trade routes. And so, show even more the
+interconnections in our everyday meals that we take for granted.
 
 # References

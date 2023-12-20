@@ -6,7 +6,7 @@ merged_data <- merge(combined_data_e, UNSD_M49_split, by.x = "countryCode", by.y
 
 merged_data$Region_Name <- ifelse(merged_data$Region_Name == "Americas", merged_data$Subregion_Name, merged_data$Region_Name)
 
-# Remove Subregion_Name column if it's no longer needed
+# Removing Subregion_Name column
 merged_data <- merged_data[, !(names(merged_data) %in% c("Subregion_Name"))]
 
 merged_data$Region_Name <- ifelse(merged_data$Region_Name == "Latin America and the Caribbean", "South America", merged_data$Region_Name)

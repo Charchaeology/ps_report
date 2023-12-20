@@ -24,8 +24,8 @@ create_species_map <- function(species_name) {
   animated_map <- ggplot() +
     borders("world", colour = "gray85", fill = "gray80") +
     geom_sf(data = merge(world, species_result, by.x = "continent", by.y = "continent"), 
-            aes(fill = as.numeric(earliest_year))) +  # Convert to numeric to ensure continuous scale
-    scale_fill_viridis_c() +  # Use continuous color scale
+            aes(fill = as.numeric(earliest_year))) +  
+    scale_fill_viridis_c() + 
     labs(title = paste(species_name),
          fill = "Year of First \nAppearance") +
     theme_minimal() +
