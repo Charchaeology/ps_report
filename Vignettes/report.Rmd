@@ -231,6 +231,8 @@ of their genus.
 # Saving the result
  write.csv(records_per_continent, file = here("Data", "data_analysis", "records_continent.csv"), row.names = FALSE)
 
+```
+
 #### Earliest appearance per continent (EAC)
 
 Here, the new combined and then filtered data set (filtered_data.csv), is
